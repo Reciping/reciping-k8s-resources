@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: kube-system  # 로그 수집 에이전트는 보통 kube-system에 배포됨
+data:
+  fluent-bit.conf: |
+    [SERVICE]  # Fluent Bit의 기본 전역 설정
+        Flush        1            # 로그 배출 주기 (초) - 1초마다 output으로 보냄
+        Daemon       Off          # Foreground 모드 (쿠버에서는 Off)
+        Log_Level    info         # 로그 레벨 (debug, info 등)
+        Parsers_File parsers.conf  # 아래 정의된 parser 파일 불러옴
+
+    [INPUT]  # 수집 대상 로그
+        Name              tail     # tail 입력 플러그인 사용
+        Path              /var/log/containers/*.log  # 쿠버네티스 로그가 저장되는 경로
+        Parser            docker   # 아래 parser에서 정의한 docker 형식 사용
+        Tag               kube.*   # 필터 및 출력에서 이 태그로 식별
+        Refresh_Interval  5        # 파일 변경 감지 주기 (초)
+        Rotate_Wait       30       # 파일 종료 대기 시간
+        Mem_Buf_Limit     5MB      # 메모리 버퍼 최대 크기
+        Skip_Long_Lines   On       # 너무 긴 로그 라인은 생략
+        DB                /tail-db/tail-containers.db  # 수집 위치 저장(DB)
+
+    [FILTER]  # 로그 전처리
+        Name                kubernetes     # K8s 메타데이터 추출
+        Match               kube.*         # 위 INPUT과 같은 태그에 적용
+        Kube_Tag_Prefix     kube.var.log.containers.  # 로그 파일명에서 pod 이름 추출용
+        Merge_Log           On             # 로그 본문에 container log 삽입
+        Merge_Log_Key       log            # 로그 메시지를 이 키로 감쌈
+        K8S-Logging.Parser  On             # 파서 활성화
+        K8S-Logging.Exclude Off            # 제외 안 함
+
+    [OUTPUT]  # 로그 전송 대상
+        Name  stdout       # 디버깅용으로 stdout 사용 (나중에 kafka로 바뀔 예정)
+        Match *            # 모든 태그에 대해 적용
+  parsers.conf: |
+    [PARSER]
+        Name   docker        # INPUT에서 참조한 이름
+        Format json          # JSON 형식 로그 처리
+        Time_Key time        # 시간 키 이름
+        Time_Format %Y-%m-%dT%H:%M:%S.%L  # 타임스탬프 포맷
