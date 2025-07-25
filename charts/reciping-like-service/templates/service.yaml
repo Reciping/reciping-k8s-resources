@@ -1,0 +1,20 @@
+# Kubernetes Service 리소스를 정의하는 파일입니다.
+# 이 서비스는 Rollout에서 생성한 파드들과 트래픽을 연결하며,
+# Argo Rollouts, Ingress(ALB) 등과 연동되기 때문에 라벨 및 포트 설정이 중요합니다.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: like-service  # 서비스 이름. Rollout, Ingress, DNS 모두 이 이름을 사용하게 됨
+  labels:
+    app: like-service  # app 라벨. 파드/롤아웃과 일관되게 맞춰야 Selector가 동작함
+
+spec:
+  type: ClusterIP  # 클러스터 내부에서만 접근 가능 (Ingress로 외부 노출 예정)
+  selector:
+    app: like-service  # 이 라벨을 가진 파드들에만 트래픽 전달
+
+  ports:
+    - name: http  # 포트 이름 (프로메테우스, Istio 등 일부 시스템이 이 이름을 참조할 수 있음)
+      port: 80  # 클러스터 내에서 노출되는 포트 (Ingress는 이 포트를 통해 접근)
+      targetPort: {{ .Values.service.port }}  # 실제 컨테이너가 사용하는 포트 (예: 8082)

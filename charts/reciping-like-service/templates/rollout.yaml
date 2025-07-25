@@ -1,0 +1,75 @@
+apiVersion: argoproj.io/v1alpha1  # Rollout CRD의 API 버전 (Argo Rollouts 설치 필요)
+kind: Rollout
+metadata:
+  name: like-service  # Rollout 리소스의 이름. Service/Ingress와 연동되므로 일관된 이름이 좋음
+  labels:
+    app: like-service  # selector 및 서비스와 연결될 공통 라벨
+
+spec:
+  replicas: {{ .Values.replicaCount }}  # 파드 복제 수 (기본 2개). values.yaml에서 정의함
+
+  revisionHistoryLimit: 2  # 롤백을 위한 이전 버전의 리비전을 몇 개 보관할지 결정
+
+  selector:
+    matchLabels:
+      app: like-service  # 이 라벨을 가진 파드들을 대상으로 Rollout이 수행됨
+
+  template:
+    metadata:
+      labels:
+        app: like-service  # 위 selector에 대응되는 라벨. Service도 이 라벨을 사용해야 함
+    spec:
+      containers:
+        - name: like-service  # 컨테이너 이름
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"  # ECR에서 가져올 이미지 주소 + 태그
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}  # 기본은 IfNotPresent
+
+          ports:
+            - containerPort: {{ .Values.service.port }}  # Spring Boot 서버 포트 (8082)
+
+          env:
+            # Spring 프로파일 지정 (application-prod.yaml 사용을 위한 환경변수)
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.env.profile | quote }}
+
+            # JWT Secret을 Kubernetes Secret에서 주입
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: like-service-secret  # secret.yaml에서 생성하는 시크릿 이름
+                  key: jwt-secret-key  # secret.yaml 내부 키 이름
+
+          # 자원 요청 및 제한 설정
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+
+          # 헬스 체크: 서비스가 살아있는지 확인 (Spring Boot - actuator 사용)
+          livenessProbe:
+            httpGet:
+              path: /actuator/health  # Spring Boot actuator 기반 헬스 체크 경로
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 15  # 초기 딜레이
+            periodSeconds: 10        # 주기적으로 10초마다 체크
+
+          # 준비 체크: 서비스가 트래픽을 받을 준비가 되었는지 확인
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+  # Canary 배포 전략 설정
+  strategy:
+    canary:
+      steps:
+        - setWeight: 25              # 25% 트래픽 할당
+        - pause: { duration: 30s }   # 30초 대기 (모니터링 및 이상 유무 판단)
+        - setWeight: 75              # 75%로 확장
+        - pause: { duration: 60s }   # 1분 대기
+        - setWeight: 100             # 최종 100% 전환
