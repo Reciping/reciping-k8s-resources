@@ -2,7 +2,7 @@ replicaCount: 2  # 기본 레플리카 수
 
 image:
   repository: 082808744580.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-like-service
-  tag: v1.0.2
+  tag: v1.0.4
   pullPolicy: IfNotPresent  # 기본 이미지 풀 정책
 
 service:
