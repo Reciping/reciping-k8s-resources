@@ -1,0 +1,54 @@
+# templates/deployment.yaml
+# gateway-service용 Kubernetes Deployment 리소스 정의
+# RollingUpdate 전략 사용
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gateway-service.fullname" . }}   # Helm 템플릿의 fullname helper 사용
+  labels:
+    app: {{ include "gateway-service.name" . }}
+    chart: {{ include "gateway-service.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}  # values.yaml에서 정의한 replica 수 사용
+  selector:
+    matchLabels:
+      app: {{ include "gateway-service.name" . }}
+  strategy:
+    type: RollingUpdate  # 배포 전략은 RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%  # 동시에 내려가는 최대 파드 비율
+      maxSurge: 25%        # 동시에 올라가는 신규 파드 비율
+  template:
+    metadata:
+      labels:
+        app: {{ include "gateway-service.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"  # values.yaml에서 정의한 이미지 정보 사용
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}  # Spring Boot가 사용하는 내부 포트 (예: 8090)
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}         # values.yaml에서 정의한 Secret 이름
+                  key: jwt_secret_key
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}  # 프라이빗 레지스트리 인증 정보
