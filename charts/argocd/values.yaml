@@ -1,15 +1,16 @@
+fullnameOverride: argocd
+
 server:
   ingress:
     enabled: true
     ingressClassName: alb
     annotations:
-      kubernetes.io/ingress.class: alb
       alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80, "HTTPS": 443}]'
       alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:082808744580:certificate/ed5bbda6-f4f7-43a6-8f96-22ab74145861
       alb.ingress.kubernetes.io/ssl-redirect: "443"
       alb.ingress.kubernetes.io/backend-protocol: HTTP
-      alb.ingress.kubernetes.io/target-type: ip
     hosts:
       - argocd.reciping.kr
     https: true
