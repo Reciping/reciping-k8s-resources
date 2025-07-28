@@ -10,7 +10,7 @@ service:
 
 env:
   profile: prod  # --spring.profiles.active 값
-  MONGODB_URI: mongodb://recipingadmin:changeme@reciping-nosql.cluster-c7wokrloy1td.ap-northeast-2.docdb.amazonaws.com:37017/like_service_db
+  MONGODB_URI: mongodb://recipingadmin:changeme@reciping-nosql.cluster-...:37017/like_service_db?ssl=true&retryWrites=false
 
 secret:
   jwtSecretKey: "m5M/3YqO8kB/32Xu0/AlU8TKtsKhXHXuRAm5XGvx786uTj3+BpN1RAA65tJvbOg1pZuVG+TqMyFk2XRL3rU7HA=="  # ${JWT_SECRET_KEY}로 사용되는 값
