@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  labels:
+    app: gateway-service
+data:
+  application-prod.yaml: |-
+    server:
+      port: 8090
+
+    spring:
+      application:
+        name: gateway-service
+
+      cloud:
+        gateway:
+          default-filters:
+            - AddResponseHeader=X-Response-Time, ${responseTime}
+          routes:
+            - id: user-service
+              uri: http://reciping-user-service:8080
+              predicates:
+                - Path=/users/**
+            - id: recipe-service
+              uri: http://reciping-recipe-service:8081
+              predicates:
+                - Path=/recipes/**
+            - id: like-service
+              uri: http://reciping-like-service:8082
+              predicates:
+                - Path=/likes/**
+            - id: search-service
+              uri: http://reciping-search-service:8084
+              predicates:
+                - Path=/search/**
+            - id: ad-service
+              uri: http://reciping-ads-service:8085
+              predicates:
+                - Path=/ads/**
+            - id: comment-service
+              uri: http://reciping-comment-service:8086
+              predicates:
+                - Path=/comments/**
+            - id: recommend-service
+              uri: http://reciping-recommendation-service:8087
+              predicates:
+                - Path=/recommend/**
+
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: health,info
+
+    jwt:
+      secret:
+        key: ${JWT_SECRET_KEY}
