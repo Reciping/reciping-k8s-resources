@@ -5,7 +5,7 @@ replicaCount: 2  # 2개 이상으로 설정해 고가용성 보장
 
 image:
   repository: 082808744580.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-gateway-service
-  tag: "v1.0.3"
+  tag: "v1.0.4"
   pullPolicy: IfNotPresent  # 로컬에 이미지가 없을 때만 풀
 
 imagePullSecrets:

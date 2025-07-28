@@ -2,7 +2,7 @@ replicaCount: 2  # 기본 레플리카 수
 
 image:
   repository: 082808744580.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-like-service
-  tag: v1.0.4
+  tag: v1.0.5
   pullPolicy: IfNotPresent  # 기본 이미지 풀 정책
 
 service:
@@ -10,6 +10,7 @@ service:
 
 env:
   profile: prod  # --spring.profiles.active 값
+  MONGODB_URI: mongodb://recipingadmin:changeme@reciping-nosql.cluster-c7wokrloy1td.ap-northeast-2.docdb.amazonaws.com:37017/like_service_db
 
 secret:
   jwtSecretKey: "m5M/3YqO8kB/32Xu0/AlU8TKtsKhXHXuRAm5XGvx786uTj3+BpN1RAA65tJvbOg1pZuVG+TqMyFk2XRL3rU7HA=="  # ${JWT_SECRET_KEY}로 사용되는 값
@@ -21,3 +22,4 @@ resources:
   requests:
     cpu: 200m
     memory: 256Mi
+

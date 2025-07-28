@@ -32,12 +32,26 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.env.profile | quote }}
 
+            # ConfigMap에서 마운트된 외부 설정파일을 읽기 위한 설정
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: file:/config/
+
             # JWT Secret을 Kubernetes Secret에서 주입
             - name: JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: like-service-secret  # secret.yaml에서 생성하는 시크릿 이름
                   key: jwt-secret-key  # secret.yaml 내부 키 이름
+
+            # Mongo URI를 환경변수로도 직접 주입
+            - name: MONGODB_URI
+              value: {{ .Values.env.MONGODB_URI | quote }}
+
+          # ConfigMap으로 주입된 application-prod.yaml을 마운트
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+              readOnly: true
 
           # 자원 요청 및 제한 설정
           resources:
@@ -63,6 +77,12 @@ spec:
               port: {{ .Values.service.port }}
             initialDelaySeconds: 10
             periodSeconds: 5
+
+      # ConfigMap을 pod 내부에 마운트하기 위한 볼륨 설정
+      volumes:
+        - name: config-volume
+          configMap:
+            name: like-service-config  # ConfigMap 리소스 이름과 일치해야 함
 
   # Canary 배포 전략 설정
   strategy:
