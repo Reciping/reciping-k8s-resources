@@ -7,7 +7,10 @@ metadata:
     {{- include "user-service.labels" . | nindent 4 }}
 spec:
   selector:
-    app: user-service
+    app.kubernetes.io/instance: user-service-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: reciping-user-service
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
@@ -23,7 +26,10 @@ metadata:
     {{- include "user-service.labels" . | nindent 4 }}
 spec:
   selector:
-    app: user-service
+    app.kubernetes.io/instance: user-service-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: reciping-user-service
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
