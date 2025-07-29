@@ -13,7 +13,7 @@ secret:
   name: user-service-secret
   JWT_SECRET_KEY: your-jwt-secret-key
   SPRING_DATASOURCE_URL: jdbc:postgresql://reciping-rdb.c7wokrloy1td.ap-northeast-2.rds.amazonaws.com:15432/reciping_postgres_user
-  SPRING_DATASOURCE_USERNAME: ostgres
+  SPRING_DATASOURCE_USERNAME: postgres
   SPRING_DATASOURCE_PASSWORD: changeme
 
 env:
