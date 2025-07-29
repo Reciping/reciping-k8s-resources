@@ -1,0 +1,20 @@
+replicaCount: 2
+
+image:
+  repository: 082808744580.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-user-service
+  tag: "v1.0.7"
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8080
+
+# 이 항목은 rollout.yaml에서는 envFrom.secretRef로 주입됨
+secret:
+  name: user-service-secret
+  JWT_SECRET_KEY: your-jwt-secret-key
+  SPRING_DATASOURCE_URL: jdbc:postgresql://reciping-rdb.c7wokrloy1td.ap-northeast-2.rds.amazonaws.com:15432/reciping_postgres_user
+  SPRING_DATASOURCE_USERNAME: ostgres
+  SPRING_DATASOURCE_PASSWORD: changeme
+
+env:
+  SPRING_PROFILES_ACTIVE: prod
