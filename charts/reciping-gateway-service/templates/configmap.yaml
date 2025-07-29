@@ -22,30 +22,45 @@ data:
               uri: http://reciping-user-service:8080
               predicates:
                 - Path=/users/**
+              filters:
+                - RewritePath=/users/(?<segment>.*), /api/v1/${segment}
+
             - id: recipe-service
               uri: http://reciping-recipe-service:8081
               predicates:
                 - Path=/recipes/**
+              filters:
+                - RewritePath=/recipes/(?<segment>.*), /api/v1/${segment}
             - id: like-service
               uri: http://reciping-like-service:8082
               predicates:
                 - Path=/likes/**
+              filters:
+                - RewritePath=/likes/(?<segment>.*), /api/v1/${segment}
             - id: search-service
               uri: http://reciping-search-service:8084
               predicates:
                 - Path=/search/**
+              filters:
+                - RewritePath=/search/(?<segment>.*), /api/v1/${segment}
             - id: ad-service
               uri: http://reciping-ads-service:8085
               predicates:
                 - Path=/ads/**
+              filters:
+                - RewritePath=/ads/(?<segment>.*), /api/v1/${segment}
             - id: comment-service
               uri: http://reciping-comment-service:8086
               predicates:
                 - Path=/comments/**
+              filters:
+                - RewritePath=/comments/(?<segment>.*), /api/v1/${segment}
             - id: recommend-service
               uri: http://reciping-recommendation-service:8087
               predicates:
                 - Path=/recommend/**
+              filters:
+                - RewritePath=/recommend/(?<segment>.*), /api/v1/${segment}
 
     management:
       endpoints:
