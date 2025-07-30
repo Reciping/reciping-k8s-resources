@@ -3,5 +3,5 @@ name: reciping-gateway-service  # 차트 이름 (디렉토리 이름과 일치�
 description: Helm chart for the ReciPing Gateway Spring Boot application
 type: application  # 애플리케이션 배포용 차트 (라이브러리 차트 아님)
 version: 1.0.0
-appVersion: "1.0.4"
+appVersion: "1.0.5"
 
