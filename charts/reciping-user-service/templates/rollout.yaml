@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: {{ include "user-service.fullname" . }}
+  name: {{ include "reciping-user-service.fullname" . }}
   namespace: reciping
   labels:
-    {{- include "user-service.labels" . | nindent 4 }}
+    {{- include "reciping-user-service.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "user-service.name" . }}
+      app: {{ include "reciping-user-service.name" . }}
   template:
     metadata:
       labels:
-        app: {{ include "user-service.name" . }}
+        app: {{ include "reciping-user-service.name" . }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -37,7 +37,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ include "user-service.fullname" . }}-config
+            name: {{ include "reciping-user-service.fullname" . }}-config
 
   strategy:
     canary:
