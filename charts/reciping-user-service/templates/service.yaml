@@ -4,10 +4,10 @@ metadata:
   name: reciping-user-service
   namespace: reciping
   labels:
-    app: {{ include "user-service.name" . }}
+    app: {{ include "reciping-user-service.name" . }}
 spec:
   selector:
-    app: {{ include "user-service.name" . }}
+    app: {{ include "reciping-user-service.name" . }}
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
