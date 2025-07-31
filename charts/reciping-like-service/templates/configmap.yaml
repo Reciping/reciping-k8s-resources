@@ -15,7 +15,7 @@ data:
         name: reciping-like-service-BE
       data:
         mongodb:
-          uri: mongodb://recipingadmin:changeme@reciping-nosql.cluster-c7wokrloy1td.ap-northeast-2.docdb.amazonaws.com:37017/like_service_db?ssl=true&retryWrites=false
+          uri: mongodb://recipingadmin:changeme@reciping-nosql.cluster-c7wokrloy1td.ap-northeast-2.docdb.amazonaws.com:37017/like_service_db?ssl=true&retryWrites=false&tlsAllowInvalidHostnames=true
       jackson:
         serialization:
           indent_output: true
