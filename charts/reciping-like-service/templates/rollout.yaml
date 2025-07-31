@@ -1,59 +1,46 @@
-apiVersion: argoproj.io/v1alpha1  # Rollout CRD의 API 버전 (Argo Rollouts 설치 필요)
+apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: like-service  # Rollout 리소스의 이름. Service/Ingress와 연동되므로 일관된 이름이 좋음
+  name: {{ include "like-service.fullname" . }}
   labels:
-    app: like-service  # selector 및 서비스와 연결될 공통 라벨
-
+    app.kubernetes.io/name: {{ include "like-service.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.replicaCount }}  # 파드 복제 수 (기본 2개). values.yaml에서 정의함
-
-  revisionHistoryLimit: 2  # 롤백을 위한 이전 버전의 리비전을 몇 개 보관할지 결정
-
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: like-service  # 이 라벨을 가진 파드들을 대상으로 Rollout이 수행됨
-
+      app.kubernetes.io/name: {{ include "like-service.name" . }}
   template:
     metadata:
       labels:
-        app: like-service  # 위 selector에 대응되는 라벨. Service도 이 라벨을 사용해야 함
+        app.kubernetes.io/name: {{ include "like-service.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "{{ .Values.service.port }}"
     spec:
       containers:
-        - name: like-service  # 컨테이너 이름
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"  # ECR에서 가져올 이미지 주소 + 태그
-          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}  # 기본은 IfNotPresent
-
+        - name: like-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           ports:
-            - containerPort: {{ .Values.service.port }}  # Spring Boot 서버 포트 (8082)
-
+            - containerPort: {{ .Values.service.port }}
+              name: http
+          args:
+            - "--spring.config.additional-location=optional:classpath:/,optional:file:/config/"
+            - "--spring.profiles.active=prod"
           env:
-            # Spring 프로파일 지정 (application-prod.yaml 사용을 위한 환경변수)
-            - name: SPRING_PROFILES_ACTIVE
-              value: {{ .Values.env.profile | quote }}
-
-            # ConfigMap에서 마운트된 외부 설정파일을 읽기 위한 설정
-            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
-              value: file:/config/
-
-            # JWT Secret을 Kubernetes Secret에서 주입
             - name: JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: like-service-secret  # secret.yaml에서 생성하는 시크릿 이름
-                  key: jwt-secret-key  # secret.yaml 내부 키 이름
-
-            # Mongo URI를 환경변수로도 직접 주입
-            - name: MONGODB_URI
-              value: {{ .Values.env.MONGODB_URI | quote }}
-
-          # ConfigMap으로 주입된 application-prod.yaml을 마운트
+                  name: {{ include "like-service.fullname" . }}-secret
+                  key: jwt-secret-key
           volumeMounts:
             - name: config-volume
               mountPath: /config
               readOnly: true
-
-          # 자원 요청 및 제한 설정
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
@@ -61,35 +48,30 @@ spec:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
               memory: {{ .Values.resources.requests.memory }}
-
-          # 헬스 체크: 서비스가 살아있는지 확인 (Spring Boot - actuator 사용)
-          livenessProbe:
-            httpGet:
-              path: /actuator/health  # Spring Boot actuator 기반 헬스 체크 경로
-              port: {{ .Values.service.port }}
-            initialDelaySeconds: 15  # 초기 딜레이
-            periodSeconds: 10        # 주기적으로 10초마다 체크
-
-          # 준비 체크: 서비스가 트래픽을 받을 준비가 되었는지 확인
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: {{ .Values.service.port }}
             initialDelaySeconds: 10
             periodSeconds: 5
-
-      # ConfigMap을 pod 내부에 마운트하기 위한 볼륨 설정
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
       volumes:
         - name: config-volume
           configMap:
-            name: like-service-config  # ConfigMap 리소스 이름과 일치해야 함
-
-  # Canary 배포 전략 설정
+            name: {{ include "like-service.fullname" . }}-config
+            items:
+              - key: application-prod.yaml
+                path: application-prod.yaml
   strategy:
     canary:
       steps:
-        - setWeight: 25              # 25% 트래픽 할당
-        - pause: { duration: 30s }   # 30초 대기 (모니터링 및 이상 유무 판단)
-        - setWeight: 75              # 75%로 확장
-        - pause: { duration: 60s }   # 1분 대기
-        - setWeight: 100             # 최종 100% 전환
+        - setWeight: 25
+        - pause: { duration: 30s }
+        - setWeight: 75
+        - pause: { duration: 60s }
+        - setWeight: 100
