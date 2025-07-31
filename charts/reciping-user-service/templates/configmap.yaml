@@ -41,3 +41,7 @@ data:
             url: http://reciping-recommendation-service:8087
           tracking-service:
             url: http://reciping-logging-service:8088
+
+    recipe-service:
+      url: http://dummy-service
+
