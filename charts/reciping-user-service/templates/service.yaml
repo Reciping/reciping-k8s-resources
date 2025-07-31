@@ -1,36 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: user-service
+  name: reciping-user-service
   namespace: reciping
   labels:
-    {{- include "user-service.labels" . | nindent 4 }}
+    app: {{ include "user-service.name" . }}
 spec:
   selector:
-    app.kubernetes.io/instance: user-service-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: reciping-user-service
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app: {{ include "user-service.name" . }}
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: user-service-preview
-  namespace: reciping
-  labels:
-    {{- include "user-service.labels" . | nindent 4 }}
-spec:
-  selector:
-    app.kubernetes.io/instance: user-service-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: reciping-user-service
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-  ports:
-    - protocol: TCP
-      port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
+      targetPort: {{ .Values.containerPort }}
