@@ -1,5 +1,5 @@
 {{/*
-Return the name of the chart
+Return the name of the chart.
 */}}
 {{- define "reciping-user-service.name" -}}
 {{- .Chart.Name | trunc 63 | trimSuffix "-" -}}
