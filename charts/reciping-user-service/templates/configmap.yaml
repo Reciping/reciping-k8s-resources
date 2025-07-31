@@ -6,4 +6,4 @@ metadata:
     app: {{ include "reciping-user-service.name" . }}
 data:
   application-prod.yaml: |-
-{{ .Files.Get "files/application-prod.yaml" | indent 4 }}
+{{ .Files.Get "files/application-prod.yaml" | indent 4 }} #t
