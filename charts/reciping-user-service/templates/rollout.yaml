@@ -1,38 +1,49 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: user-service
+  name: {{ include "user-service.fullname" . }}
   namespace: reciping
   labels:
     {{- include "user-service.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  revisionHistoryLimit: 2
-
   selector:
     matchLabels:
-      {{- include "user-service.labels" . | nindent 6 }}
-
+      app: {{ include "user-service.name" . }}
   template:
     metadata:
       labels:
-        {{- include "user-service.labels" . | nindent 8 }}
+        app: {{ include "user-service.name" . }}
     spec:
       containers:
-        - name: user-service
+        - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: {{ .Values.containerPort }}
+          args:
+            - "--spring.config.additional-location=optional:classpath:/,optional:file:/config/"
+            - "--spring.profiles.active=prod"
           env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: {{ .Values.env.SPRING_PROFILES_ACTIVE }}
-          envFrom:
-            - secretRef:
-                name: {{ .Values.secret.name }}
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: reciping-user-secret
+                  key: jwt_secret_key
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "user-service.fullname" . }}-config
 
   strategy:
-    blueGreen:
-      activeService: user-service
-      previewService: user-service-preview
-      autoPromotionEnabled: false
+    canary:
+      steps:
+        - setWeight: 30
+        - pause: { duration: 30s }
+        - setWeight: 60
+        - pause: { duration: 30s }
+        - setWeight: 100
