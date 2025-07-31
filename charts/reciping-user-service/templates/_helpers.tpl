@@ -6,7 +6,7 @@ Return the name of the chart.
 {{- end }}
 
 {{/*
-Return the full name of the release
+Return the full name of the release.
 */}}
 {{- define "reciping-user-service.fullname" -}}
 {{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
