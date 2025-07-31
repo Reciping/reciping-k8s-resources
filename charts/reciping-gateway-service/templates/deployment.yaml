@@ -32,6 +32,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.containerPort }}  # Spring Boot가 사용하는 내부 포트 (예: 8090)
+          args:
+            - "--spring.config.additional-location=optional:classpath:/,optional:file:/config/"
+            - "--spring.profiles.active=prod"
           env:
             - name: JWT_SECRET_KEY
               valueFrom:
@@ -54,7 +57,6 @@ spec:
             - name: config-volume
               mountPath: /config
               readOnly: true
-
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- range .Values.imagePullSecrets }}
