@@ -7,6 +7,9 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
   application-prod.yaml: |-
+    server:
+      port: 8082
+
     spring:
       application:
         name: reciping-like-service-BE
@@ -16,14 +19,17 @@ data:
       jackson:
         serialization:
           indent_output: true
+
     jwt:
       secret:
         key: ${JWT_SECRET_KEY}
+
     management:
       endpoints:
         web:
           exposure:
             include: health
+
     endpoint:
     health:
       show-details: always
