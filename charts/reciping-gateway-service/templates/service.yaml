@@ -13,6 +13,7 @@ spec:
   selector:
     app: {{ include "gateway-service.name" . }}
   ports:
-    - protocol: TCP
-      port: {{ .Values.service.port }}            # 서비스가 노출할 포트 (예: 8090)
-      targetPort: {{ .Values.containerPort }}     # 실제 컨테이너에서 사용하는 포트
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}            # 서비스가 노출할 포트 (예: 80)
+      targetPort: {{ .Values.containerPort }}     # 실제 컨테이너에서 사용하는 포트(8090)
