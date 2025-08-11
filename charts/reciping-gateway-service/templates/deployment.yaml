@@ -25,6 +25,12 @@ spec:
     metadata:
       labels:
         app: {{ include "gateway-service.name" . }}
+      annotations:
+        {{- if .Values.metrics.prometheus.enabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/path: {{ .Values.metrics.prometheus.path | quote }}
+        prometheus.io/port: {{ .Values.metrics.prometheus.port | quote }}
+        {{- end }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -32,6 +38,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.containerPort }}  # Spring Boot가 사용하는 내부 포트 (예: 8090)
+              name: http
           args:
             - "--spring.config.additional-location=optional:classpath:/,optional:file:/config/"
             - "--spring.profiles.active=prod"
