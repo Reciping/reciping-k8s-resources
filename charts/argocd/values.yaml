@@ -2,26 +2,32 @@ server:
   ingress:
     enabled: true
     ingressClassName: alb
-    hostname: argocd.reciping.kr
+    hosts:
+      - argocd.reciping.kr
     annotations:
+      kubernetes.io/ingress.class: alb
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80, "HTTPS": 443}]'
-      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:082808744580:certificate/f7c5777b-0bf6-4d3a-b9da-6e4b14aa0144
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:892117097999:certificate/c6a16497-4da7-4cce-8fc7-29a5a5dc3e36
       alb.ingress.kubernetes.io/ssl-redirect: "443"
-      alb.ingress.kubernetes.io/backend-protocol: HTTP
-    tls: true
+      alb.ingress.kubernetes.io/group.name: reciping
     paths:
       - /
     pathType: Prefix
-
+    servicePort: http   # 필요시 80
   service:
     type: ClusterIP
     servicePortHttp: 80
     servicePortHttps: 443
-
   extraArgs:
     - --insecure
+
+configs:
+  cm:
+    url: https://argocd.reciping.kr
+  params:
+    server.insecure: "true"
 
 dex:
   enabled: false
