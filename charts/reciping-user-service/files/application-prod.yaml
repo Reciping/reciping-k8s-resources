@@ -1,11 +1,18 @@
 spring:
   application:
     name: reciping-user-service-BE
+
   datasource:
-    url: jdbc:postgresql://reciping-rdb.c7wokrloy1td.ap-northeast-2.rds.amazonaws.com:15432/reciping_postgres_user
-    username: postgres
-    password: changeme
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update   # ← 테이블 자동 생성을 위해 추가됨
+
   jackson:
     serialization:
       indent_output: true
@@ -36,3 +43,16 @@ feign:
 
 recipe-service:
   url: http://dummy-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+  endpoint:
+    health:
+      probes:
+        enabled: true   # /actuator/health/liveness, /readiness 활성화
+    prometheus:
+      enabled: true
