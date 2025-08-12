@@ -15,8 +15,7 @@ data:
 
       cloud:
         gateway:
-          default-filters:
-            - AddResponseHeader=X-Response-Time, ${responseTime}
+      # default-filters removed due to expression error (responseTime not defined)
           routes:
             # Special route to expose user-service actuator via gateway without API prefix rewrite
             - id: user-service-actuator
