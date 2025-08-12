@@ -13,7 +13,7 @@ service:
   port: 8080
 
 database:
-  url: "jdbc:postgresql://<rds-endpoint>:5432/app"   # 실제 RDS 엔드포인트로 교체 필요
+  url: "jdbc:postgresql://reciping-postgres.cfmw20sgimj0.ap-northeast-2.rds.amazonaws.com:5432/app"
   username: "appuser"
   password: "changeme-strong-password"
 
