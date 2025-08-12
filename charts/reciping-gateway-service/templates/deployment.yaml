@@ -26,6 +26,8 @@ spec:
       labels:
         app: {{ include "gateway-service.name" . }}
       annotations:
+        # Roll pod on ConfigMap changes
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- if .Values.metrics.prometheus.enabled }}
         prometheus.io/scrape: "true"
         prometheus.io/path: {{ .Values.metrics.prometheus.path | quote }}
