@@ -56,14 +56,21 @@ spec:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /actuator/health
               port: 8080
             initialDelaySeconds: 10
-            periodSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 30
           volumeMounts:
             - name: config-volume
               mountPath: /config
