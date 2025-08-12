@@ -41,9 +41,7 @@ env:
 
 # Secrets to be provided at deploy-time
 secrets:
-  jwtSecretKeyBase64: ""  # Base64-encoded JWT key required
-  awsAccessKeyId: ""
-  awsSecretAccessKey: ""
+  jwtSecretKeyBase64: "m5M/3YqO8kB/32Xu0/AlU8TKtsKhXHXuRAm5XGvx786uTj3+BpN1RAA65tJvbOg1pZuVG+TqMyFk2XRL3rU7HA=="  
 
 metrics:
   prometheus:

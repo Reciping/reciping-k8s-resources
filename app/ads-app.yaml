@@ -5,13 +5,16 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://github.com/Reciping/reciping-k8s-resources
-    targetRevision: dev
-    path: charts/reciping-ads-service
-    helm:
-      valueFiles:
-        - values.yaml
+  sources:
+    - repoURL: https://github.com/Reciping/reciping-k8s-resources
+      targetRevision: dev
+      path: charts/reciping-ads-service
+      helm:
+        valueFiles:
+          - values.yaml
+    - repoURL: https://github.com/Reciping/reciping-k8s-resources
+      targetRevision: dev
+      path: manifests/ads
   destination:
     server: https://kubernetes.default.svc
     namespace: reciping
