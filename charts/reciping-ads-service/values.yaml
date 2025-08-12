@@ -1,0 +1,90 @@
+replicaCount: 2
+
+image:
+  repository: 892117097999.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-ads-service
+  tag: v1.0.6
+  pullPolicy: IfNotPresent
+imagePullSecrets:
+  - name: reciping-ecr-secret
+
+containerPort: 8080
+
+service:
+  port: 8085
+
+# RDS(PostgreSQL)
+database:
+  url: "jdbc:postgresql://reciping-postgres.cfmw20sgimj0.ap-northeast-2.rds.amazonaws.com:5432/app"
+  username: "appuser"
+  password: "changeme-strong-password"
+
+aws:
+  s3:
+    bucket: reciping-ads-prod
+    region: ap-northeast-2
+    endpoint: "https://s3.ap-northeast-2.amazonaws.com"
+
+# Non-secret envs
+env:
+  SERVER_PORT: "8080"
+  USER_SERVICE_URL: "http://reciping-user-service:8080"
+  FEIGN_CONNECT_TIMEOUT_MS: "2000"
+  FEIGN_READ_TIMEOUT_MS: "3000"
+  CORS_ALLOWED_ORIGINS: "https://www.example.com"
+  TZ: "Asia/Seoul"
+  JAVA_TOOL_OPTIONS: "-Duser.timezone=Asia/Seoul"
+  DB_MAX_POOL_SIZE: "10"
+  DB_MIN_IDLE: "5"
+  DB_CONNECTION_TIMEOUT_MS: "30000"
+  DB_IDLE_TIMEOUT_MS: "600000"
+  DB_MAX_LIFETIME_MS: "1800000"
+
+# Secrets to be provided at deploy-time
+secrets:
+  jwtSecretKeyBase64: ""  # Base64-encoded JWT key required
+  awsAccessKeyId: ""
+  awsSecretAccessKey: ""
+
+metrics:
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+    port: 8080
+    podMonitor:
+      enabled: true
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+probes:
+  liveness:
+    path: /actuator/health/liveness
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 2
+  readiness:
+    path: /actuator/health/readiness
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 2
+
+ingress:
+  enabled: false
+  className: nginx
+  hosts:
+    - host: ads.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  preserveAuthorizationHeader: true
+
+serviceAccount:
+  create: false
+  name: ""
+  annotations: {}
