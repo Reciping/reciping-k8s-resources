@@ -18,6 +18,14 @@ data:
           default-filters:
             - AddResponseHeader=X-Response-Time, ${responseTime}
           routes:
+            # Special route to expose user-service actuator via gateway without API prefix rewrite
+            - id: user-service-actuator
+              uri: http://reciping-user-service:8080
+              predicates:
+                - Path=/users/actuator/**
+              filters:
+                - RewritePath=/users/actuator/(?<segment>.*), /actuator/${segment}
+
             - id: user-service
               uri: http://reciping-user-service:8080
               predicates:
