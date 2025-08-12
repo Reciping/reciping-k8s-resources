@@ -1,0 +1,145 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "reciping-ads-service.fullname" . }}
+  namespace: reciping
+  labels:
+    {{- include "reciping-ads-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "reciping-ads-service.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "reciping-ads-service.name" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.metrics.prometheus.enabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/path: {{ .Values.metrics.prometheus.path | quote }}
+        prometheus.io/port: {{ .Values.metrics.prometheus.port | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ if .Values.serviceAccount.name }}{{ .Values.serviceAccount.name }}{{ else }}{{ include "reciping-ads-service.fullname" . }}{{ end }}
+      {{- else if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+              name: http
+          args:
+            - "--spring.config.additional-location=file:/config/"
+            - "--spring.profiles.active=prod"
+          env:
+            - name: JWT_SECRET_KEY_BASE64
+              valueFrom:
+                secretKeyRef:
+                  name: reciping-ads-secret
+                  key: jwt_secret_key_base64
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: reciping-ads-secret
+                  key: db_url
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: reciping-ads-secret
+                  key: db_username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: reciping-ads-secret
+                  key: db_password
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: reciping-ads-secret
+                  key: aws_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: reciping-ads-secret
+                  key: aws_secret_access_key
+            - name: AWS_REGION
+              value: {{ .Values.aws.s3.region | quote }}
+            - name: AWS_S3_BUCKET
+              value: {{ .Values.aws.s3.bucket | quote }}
+            - name: AWS_S3_ENDPOINT
+              value: {{ .Values.aws.s3.endpoint | quote }}
+            - name: USER_SERVICE_URL
+              value: {{ .Values.env.USER_SERVICE_URL | quote }}
+            - name: SERVER_PORT
+              value: {{ .Values.env.SERVER_PORT | quote }}
+            - name: FEIGN_CONNECT_TIMEOUT_MS
+              value: {{ .Values.env.FEIGN_CONNECT_TIMEOUT_MS | quote }}
+            - name: FEIGN_READ_TIMEOUT_MS
+              value: {{ .Values.env.FEIGN_READ_TIMEOUT_MS | quote }}
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ .Values.env.CORS_ALLOWED_ORIGINS | quote }}
+            - name: TZ
+              value: {{ .Values.env.TZ | quote }}
+            - name: JAVA_TOOL_OPTIONS
+              value: {{ .Values.env.JAVA_TOOL_OPTIONS | quote }}
+            - name: DB_MAX_POOL_SIZE
+              value: {{ .Values.env.DB_MAX_POOL_SIZE | quote }}
+            - name: DB_MIN_IDLE
+              value: {{ .Values.env.DB_MIN_IDLE | quote }}
+            - name: DB_CONNECTION_TIMEOUT_MS
+              value: {{ .Values.env.DB_CONNECTION_TIMEOUT_MS | quote }}
+            - name: DB_IDLE_TIMEOUT_MS
+              value: {{ .Values.env.DB_IDLE_TIMEOUT_MS | quote }}
+            - name: DB_MAX_LIFETIME_MS
+              value: {{ .Values.env.DB_MAX_LIFETIME_MS | quote }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+              readOnly: true
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ .name }}
+        {{- end }}
+      {{- end }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "reciping-ads-service.fullname" . }}-config
+  strategy:
+    canary:
+      steps:
+        - setWeight: 30
+        - pause: { duration: 30s }
+        - setWeight: 60
+        - pause: { duration: 30s }
+        - setWeight: 100

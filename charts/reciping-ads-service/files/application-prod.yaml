@@ -1,0 +1,88 @@
+spring:
+  application:
+    name: reciping-ads-service-BE
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_MAX_POOL_SIZE:10}
+      minimum-idle: ${DB_MIN_IDLE:5}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT_MS:30000}
+      idle-timeout: ${DB_IDLE_TIMEOUT_MS:600000}
+      max-lifetime: ${DB_MAX_LIFETIME_MS:1800000}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  jackson:
+    time-zone: Asia/Seoul
+    serialization:
+      indent_output: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: native
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY_BASE64}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    region:
+      static: ${AWS_REGION:ap-northeast-2}
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+
+user-service:
+  url: ${USER_SERVICE_URL:http://reciping-user-service:8080}
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: ${FEIGN_CONNECT_TIMEOUT_MS:2000}
+        readTimeout: ${FEIGN_READ_TIMEOUT_MS:3000}
+        loggerLevel: ${FEIGN_LOG_LEVEL:none}
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+cors:
+  allowed-origins:
+    - ${CORS_ALLOWED_ORIGINS:https://www.example.com}
+
+spring.sql.init.mode: never
