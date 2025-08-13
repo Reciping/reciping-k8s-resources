@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: like-app
+  name: like-service-app
   namespace: argocd
 spec:
   project: default
