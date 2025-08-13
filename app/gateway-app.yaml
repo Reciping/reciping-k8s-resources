@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: gateway-app
+  name: gateway-service-app
   namespace: argocd
 spec:
   project: default
