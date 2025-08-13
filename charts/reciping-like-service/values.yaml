@@ -18,8 +18,8 @@ docdb:
   password: "reciping123"
   database: "like_service_db"
   tls:
-    insecure: true
     allowInvalidHostnames: true
+    allowInvalidCertificates: true
 
 metrics:
   prometheus:
