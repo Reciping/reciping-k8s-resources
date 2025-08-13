@@ -1,6 +1,6 @@
-{{- if eq .Values.workload.kind "Rollout" }}
-apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+{{- if eq .Values.workload.kind "Deployment" }}
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: {{ include "like-service.fullname" . }}
   labels:
@@ -8,10 +8,14 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "like-service.name" . }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable | quote }}
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge | quote }}
   template:
     metadata:
       labels:
@@ -83,27 +87,5 @@ spec:
             items:
               - key: application-prod.yaml
                 path: application-prod.yaml
-  strategy:
-    {{- if eq .Values.strategy.type "canary" }}
-    canary:
-      steps:
-        {{- range $i, $s := .Values.strategy.canary.steps }}
-        - setWeight: {{ $s.weight }}
-        {{- if $s.pause }}
-        - pause: { duration: {{ $s.pause }} }
-        {{- end }}
-        {{- end }}
-    {{- else if eq .Values.strategy.type "blueGreen" }}
-    blueGreen:
-      activeService: {{ include "like-service.fullname" . }}
-      previewService: {{ include "like-service.fullname" . }}-preview
-      autoPromotionEnabled: {{ .Values.strategy.blueGreen.autoPromotionEnabled }}
-      autoPromotionSeconds: {{ .Values.strategy.blueGreen.autoPromotionSeconds }}
-      scaleDownDelaySeconds: {{ .Values.strategy.blueGreen.scaleDownDelaySeconds }}
-      previewReplicaCount: {{ .Values.strategy.blueGreen.previewReplicaCount }}
-    {{- else }}
-    rollingUpdate:
-      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
-      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
-    {{- end }}
 {{- end }}
+

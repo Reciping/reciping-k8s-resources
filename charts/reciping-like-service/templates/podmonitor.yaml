@@ -1,0 +1,21 @@
+{{- if and (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1") .Values.metrics.prometheus.enabled .Values.metrics.prometheus.podMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "like-service.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "like-service.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "like-service.name" . }}
+  podMetricsEndpoints:
+    - path: {{ .Values.metrics.prometheus.path }}
+      port: http
+      interval: 30s
+{{- end }}
+

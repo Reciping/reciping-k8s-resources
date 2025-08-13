@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "like-service.fullname" . }}-config
   labels:
+    # 이 ConfigMap이 속한 Helm 차트와 릴리스 식별용 라벨
     app.kubernetes.io/name: {{ include "like-service.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
@@ -15,7 +16,11 @@ data:
         name: reciping-like-service-BE
       data:
         mongodb:
-          uri: mongodb://recipingadmin:changeme@reciping-nosql.cluster-c7wokrloy1td.ap-northeast-2.docdb.amazonaws.com:37017/like_service_db?ssl=true&retryWrites=false&tlsAllowInvalidHostnames=true
+          # 환경변수로 주입되는 DocumentDB 접속 URI 사용
+          uri: ${DOCDB_URI}
+          database: {{ .Values.docdb.database | default "like_service_db" }}
+          auto-index-creation: true
+
       jackson:
         serialization:
           indent_output: true
@@ -28,8 +33,8 @@ data:
       endpoints:
         web:
           exposure:
-            include: health
+            include: health,prometheus
 
     endpoint:
-    health:
-      show-details: always
+      health:
+        show-details: always

@@ -1,0 +1,3 @@
+# Ignore local plain AWS secret manifest
+charts/reciping-ads-service/plain-aws-secret.yaml
+
