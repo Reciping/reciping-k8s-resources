@@ -17,6 +17,9 @@ docdb:
   username: "recipingadmin"
   password: "reciping123"
   database: "like_service_db"
+  tls:
+    insecure: true
+    allowInvalidHostnames: true
 
 metrics:
   prometheus:
@@ -30,7 +33,6 @@ metrics:
 workload:
   kind: Rollout
 
-# 배포 전략: canary | blueGreen | rollingUpdate
 strategy:
   type: canary
   canary:
