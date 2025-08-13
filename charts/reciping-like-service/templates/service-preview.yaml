@@ -1,7 +1,8 @@
+{{- if and (eq .Values.workload.kind "Rollout") (eq .Values.strategy.type "blueGreen") }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "like-service.fullname" . }}
+  name: {{ include "like-service.fullname" . }}-preview
   labels:
     app.kubernetes.io/name: {{ include "like-service.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -13,3 +14,5 @@ spec:
     - name: http
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}
+{{- end }}
+

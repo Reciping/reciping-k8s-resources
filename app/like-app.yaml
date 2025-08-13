@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Reciping/reciping-k8s-resources
-    targetRevision: HEAD
+    targetRevision: dev
     path: charts/reciping-like-service
     helm:
       valueFiles:

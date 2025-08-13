@@ -1,8 +1,8 @@
 replicaCount: 2
 
 image:
-  repository: 082808744580.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-like-service
-  tag: v1.0.5
+  repository: 892117097999.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-like-service
+  tag: v1.0.7
   pullPolicy: IfNotPresent
 
 service:
@@ -10,6 +10,63 @@ service:
 
 secret:
   jwtSecretKey: "m5M/3YqO8kB/32Xu0/AlU8TKtsKhXHXuRAm5XGvx786uTj3+BpN1RAA65tJvbOg1pZuVG+TqMyFk2XRL3rU7HA=="
+
+docdb:
+  host: "reciping-docdb.cluster-cfmw20sgimj0.ap-northeast-2.docdb.amazonaws.com"
+  port: 27017
+  username: "recipingadmin"
+  password: "reciping123"
+  database: "like_service_db"
+
+metrics:
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+    port: 8082
+    podMonitor:
+      enabled: true
+
+# 워크로드 종류: Rollout | Deployment
+workload:
+  kind: Rollout
+
+# 배포 전략: canary | blueGreen | rollingUpdate
+strategy:
+  type: canary
+  canary:
+    steps:
+      - weight: 25
+        pause: 30s
+      - weight: 75
+        pause: 60s
+      - weight: 100
+  blueGreen:
+    autoPromotionEnabled: true
+    autoPromotionSeconds: 0
+    scaleDownDelaySeconds: 30
+    previewReplicaCount: 1
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+
+lifecycle:
+  preStopSleepSeconds: 20
+  terminationGraceSeconds: 30
+
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 6
+  cpu:
+    enabled: true
+    targetAverageUtilization: 70
+  memory:
+    enabled: false
+    targetAverageUtilization: 80
+
+pdb:
+  enabled: false
+  minAvailable: 1
 
 resources:
   limits:
