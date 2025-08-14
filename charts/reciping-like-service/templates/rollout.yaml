@@ -60,12 +60,17 @@ spec:
               value: "true"
             {{- if .Values.docdb.tls.useTruststore }}
             - name: JAVA_TOOL_OPTIONS
-              value: "-Djavax.net.ssl.trustStore=/config/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+              value: "-Djavax.net.ssl.trustStore=/truststore/{{ .Values.docdb.tls.truststoreKey | default "cacerts" }} -Djavax.net.ssl.trustStorePassword={{ .Values.docdb.tls.truststorePassword | default "changeit" }}"
             {{- end }}
           volumeMounts:
             - name: config-volume
               mountPath: /config
               readOnly: true
+            {{- if .Values.docdb.tls.useTruststore }}
+            - name: truststore-volume
+              mountPath: /truststore
+              readOnly: true
+            {{- end }}
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
@@ -99,6 +104,11 @@ spec:
             items:
               - key: application-prod.yaml
                 path: application-prod.yaml
+        {{- if .Values.docdb.tls.useTruststore }}
+        - name: truststore-volume
+          secret:
+            secretName: {{ .Values.docdb.tls.truststoreSecretName | default "docdb-truststore" }}
+        {{- end }}
   strategy:
     {{- if eq .Values.strategy.type "canary" }}
     canary:
