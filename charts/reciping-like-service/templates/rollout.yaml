@@ -70,14 +70,21 @@ spec:
             httpGet:
               path: /actuator/health
               port: {{ .Values.service.port }}
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds | default 30 }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds | default 5 }}
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: {{ .Values.service.port }}
-            initialDelaySeconds: 15
-            periodSeconds: 10
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds | default 60 }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds | default 10 }}
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: {{ .Values.probes.startup.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.startup.periodSeconds | default 10 }}
+            failureThreshold: {{ .Values.probes.startup.failureThreshold | default 30 }}
       volumes:
         - name: config-volume
           configMap:

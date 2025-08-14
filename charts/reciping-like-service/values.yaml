@@ -18,8 +18,8 @@ docdb:
   password: "reciping123"
   database: "like_service_db"
   tls:
-    allowInvalidHostnames: true
-    allowInvalidCertificates: true
+    insecure: true
+    allowInvalidHostnames: false
 
 metrics:
   prometheus:
@@ -77,3 +77,15 @@ resources:
   requests:
     cpu: 200m
     memory: 256Mi
+
+probes:
+  readiness:
+    initialDelaySeconds: 40
+    periodSeconds: 5
+  liveness:
+    initialDelaySeconds: 60
+    periodSeconds: 10
+  startup:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    failureThreshold: 30
