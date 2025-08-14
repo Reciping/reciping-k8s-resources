@@ -21,6 +21,9 @@ docdb:
     insecure: true
     allowInvalidHostnames: false
     useTruststore: false
+    truststoreSecretName: docdb-truststore
+    truststoreKey: cacerts
+    truststorePassword: changeit
 
 metrics:
   prometheus:
