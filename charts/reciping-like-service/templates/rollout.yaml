@@ -58,8 +58,10 @@ spec:
             # Spring Mongo SSL 설정을 명시적으로 강제해 드라이버 충돌 방지
             - name: SPRING_DATA_MONGODB_SSL_ENABLED
               value: "true"
-            - name: SPRING_DATA_MONGODB_SSL_INVALID_HOSTNAME_ALLOWED
-              value: "false"
+            {{- if .Values.docdb.tls.useTruststore }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Djavax.net.ssl.trustStore=/config/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+            {{- end }}
           volumeMounts:
             - name: config-volume
               mountPath: /config
