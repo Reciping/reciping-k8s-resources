@@ -20,6 +20,7 @@ docdb:
   tls:
     insecure: true
     allowInvalidHostnames: false
+    useTruststore: false
 
 metrics:
   prometheus:
