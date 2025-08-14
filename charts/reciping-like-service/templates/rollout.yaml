@@ -55,6 +55,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "like-service.fullname" . }}-secret
                   key: docdb-uri
+            # Spring Mongo SSL 설정을 명시적으로 강제해 드라이버 충돌 방지
+            - name: SPRING_DATA_MONGODB_SSL_ENABLED
+              value: "true"
+            - name: SPRING_DATA_MONGODB_SSL_INVALID_HOSTNAME_ALLOWED
+              value: "false"
           volumeMounts:
             - name: config-volume
               mountPath: /config
