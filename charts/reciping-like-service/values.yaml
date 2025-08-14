@@ -11,6 +11,7 @@ service:
 secret:
   jwtSecretKey: "m5M/3YqO8kB/32Xu0/AlU8TKtsKhXHXuRAm5XGvx786uTj3+BpN1RAA65tJvbOg1pZuVG+TqMyFk2XRL3rU7HA=="
 
+#
 docdb:
   host: "reciping-docdb.cluster-cfmw20sgimj0.ap-northeast-2.docdb.amazonaws.com"
   port: 27017
