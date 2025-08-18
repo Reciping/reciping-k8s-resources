@@ -1,0 +1,72 @@
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: alb
+    hosts:
+      - grafana.reciping.kr
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:892117097999:certificate/c6a16497-4da7-4cce-8fc7-29a5a5dc3e36
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/group.name: reciping
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: gp3
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ALL
+
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+    externalLabels:
+      cluster: reciping-eks
+      environment: prod
+
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+  config:
+    route:
+      group_by: ['reciping_team','alertname']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      receiver: default
+      routes:
+        - matchers: ['reciping_team="ads"']
+          receiver: ads-slack
+        - matchers: ['reciping_team="user"']
+          receiver: user-slack
+    receivers:
+      - name: default
+      - name: ads-slack
+        slack_configs:
+          - channel: '#ads-alerts'
+            send_resolved: true
+            api_url: $SLACK_WEBHOOK_URL
+      - name: user-slack
+        slack_configs:
+          - channel: '#user-alerts'
+            send_resolved: true
+            api_url: $SLACK_WEBHOOK_URL
