@@ -1,5 +1,8 @@
 replicaCount: 2
 
+# 팀 태그(모니터링/알람 라우팅에 사용)
+team: user
+
 image:
   repository: 892117097999.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-user-service
   tag: v1.0.10

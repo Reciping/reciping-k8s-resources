@@ -3,6 +3,9 @@
 
 replicaCount: 1  # 2개 이상으로 설정해 고가용성 보장
 
+# 팀 태그(모니터링/알람 라우팅에 사용)
+team: platform
+
 image:
   repository: 892117097999.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-gateway-service
   tag: "v1.0.6"
