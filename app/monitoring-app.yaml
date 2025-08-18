@@ -11,9 +11,10 @@ spec:
       targetRevision: 61.6.0
       helm:
         valueFiles:
-          - monitoring/values.yaml
+          - $values/monitoring/values.yaml
     - repoURL: https://github.com/Reciping/reciping-k8s-resources
       targetRevision: dev
+      ref: values
       path: manifests/monitoring
   destination:
     server: https://kubernetes.default.svc
