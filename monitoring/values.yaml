@@ -14,7 +14,7 @@ grafana:
   persistence:
     enabled: true
     size: 10Gi
-    storageClassName: gp2
+    storageClassName: gp2-csi
   sidecar:
     dashboards:
       enabled: true
@@ -29,7 +29,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: gp2
+          storageClassName: gp2-csi
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -43,7 +43,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: gp2
+          storageClassName: gp2-csi
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
