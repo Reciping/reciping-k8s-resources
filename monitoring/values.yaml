@@ -14,7 +14,7 @@ grafana:
   persistence:
     enabled: true
     size: 10Gi
-    storageClassName: gp3
+    storageClassName: gp2
   sidecar:
     dashboards:
       enabled: true
@@ -24,10 +24,12 @@ grafana:
 prometheus:
   prometheusSpec:
     retention: 15d
+    podMonitorNamespaceSelector: {}
+    podMonitorSelector: {}
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: gp3
+          storageClassName: gp2
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -41,7 +43,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: gp3
+          storageClassName: gp2
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -64,9 +66,9 @@ alertmanager:
         slack_configs:
           - channel: '#ads-alerts'
             send_resolved: true
-            api_url: $SLACK_WEBHOOK_URL
+            api_url: https://hooks.slack.com/services/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
       - name: user-slack
         slack_configs:
           - channel: '#user-alerts'
             send_resolved: true
-            api_url: $SLACK_WEBHOOK_URL
+            api_url: https://hooks.slack.com/services/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
