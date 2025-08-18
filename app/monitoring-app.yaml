@@ -14,6 +14,9 @@ spec:
           - $values/monitoring/values.yaml
     - repoURL: https://github.com/Reciping/reciping-k8s-resources
       targetRevision: dev
+      path: manifests/storage
+    - repoURL: https://github.com/Reciping/reciping-k8s-resources
+      targetRevision: dev
       ref: values
       path: manifests/monitoring
   destination:
