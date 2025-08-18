@@ -16,5 +16,12 @@ spec:
     - path: {{ .Values.metrics.prometheus.path }}
       port: http
       interval: 30s
+      relabelings:
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_label_reciping_io_team]
+          targetLabel: reciping_team
+        - action: replace
+          replacement: {{ include "reciping-user-service.name" . }}
+          targetLabel: reciping_service
 {{- end }}
 

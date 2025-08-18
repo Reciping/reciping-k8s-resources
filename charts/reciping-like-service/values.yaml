@@ -1,5 +1,8 @@
 replicaCount: 2
 
+# 팀 태그(모니터링/알람 라우팅에 사용)
+team: user
+
 image:
   repository: 892117097999.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-like-service
   tag: v1.0.7
@@ -18,9 +21,9 @@ docdb:
   password: "reciping123"
   database: "like_service_db"
   tls:
-    insecure: true
+    useTruststore: true
+    insecure: false
     allowInvalidHostnames: false
-    useTruststore: false
     truststoreSecretName: docdb-truststore
     truststoreKey: cacerts
     truststorePassword: changeit

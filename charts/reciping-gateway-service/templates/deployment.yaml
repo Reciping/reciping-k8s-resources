@@ -25,6 +25,7 @@ spec:
     metadata:
       labels:
         app: {{ include "gateway-service.name" . }}
+        reciping.io/team: {{ .Values.team }}
       annotations:
         # Roll pod on ConfigMap changes
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}

@@ -74,6 +74,11 @@ management:
     export:
       prometheus:
         enabled: true
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
 
 springdoc:
   api-docs:

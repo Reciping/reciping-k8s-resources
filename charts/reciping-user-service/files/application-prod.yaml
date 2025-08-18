@@ -56,3 +56,10 @@ management:
         enabled: true   # /actuator/health/liveness, /readiness 활성화
     prometheus:
       enabled: true
+
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
