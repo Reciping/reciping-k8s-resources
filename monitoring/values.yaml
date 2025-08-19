@@ -6,6 +6,7 @@ grafana:
       - grafana.reciping.kr
     annotations:
       kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/target-type: ip
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
       alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:892117097999:certificate/c6a16497-4da7-4cce-8fc7-29a5a5dc3e36
