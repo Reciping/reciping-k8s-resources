@@ -68,6 +68,9 @@ alertmanager:
       repeat_interval: 4h
       receiver: default
       routes:
+        # 임시: ContainerRestarts는 팀 라벨 유무와 관계없이 user 채널로 전송해 Slack 경로 검증
+        - matchers: ['alertname="ContainerRestarts"']
+          receiver: user-slack
         - matchers: ['reciping_team="ads"']
           receiver: ads-slack
         - matchers: ['reciping_team="user"']
