@@ -23,7 +23,7 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: "[🚨경고 - warning] 5xx 오류율 높음"
+            summary: "[경고] 5xx 오류율 높음"
             description: "팀={{ $labels.reciping_team }}, 서비스={{ $labels.reciping_service }}의 5xx 오류율이 10분 동안 5%를 초과했습니다."
 
         - alert: ServiceErrorRateHighCritical
@@ -41,7 +41,7 @@ spec:
           labels:
             severity: critical
           annotations:
-            summary: "[🚨치명적 - critical] 5xx 오류율 매우 높음"
+            summary: "[치명] 5xx 오류율 매우 높음"
             description: "팀={{ $labels.reciping_team }}, 서비스={{ $labels.reciping_service }}의 5xx 오류율이 5분 동안 10%를 초과했습니다."
 
         - alert: ServiceInstancesDown
@@ -51,7 +51,7 @@ spec:
           labels:
             severity: critical
           annotations:
-            summary: "[🚨치명적 - critical] 모든 인스턴스 다운"
+            summary: "[치명] 모든 인스턴스 다운"
             description: "팀={{ $labels.reciping_team }}, 서비스={{ $labels.reciping_service }}의 모든 스크레이프 대상이 Down 상태입니다."
 
     # 2) 지연 시간 (퍼센타일)
@@ -68,7 +68,7 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: "[🚨경고 - warning] P95 지연 시간 높음 (>500ms)"
+            summary: "[경고] P95 지연 시간 높음 (>500ms)"
             description: "팀={{ $labels.reciping_team }}, 서비스={{ $labels.reciping_service }}의 P95 지연이 10분 동안 500ms를 초과했습니다."
 
         - alert: ServiceLatencyP99High
@@ -82,7 +82,7 @@ spec:
           labels:
             severity: critical
           annotations:
-            summary: "[🚨치명적 - critical] P99 지연 시간 매우 높음 (>1s)"
+            summary: "[치명] P99 지연 시간 매우 높음 (>1s)"
             description: "팀={{ $labels.reciping_team }}, 서비스={{ $labels.reciping_service }}의 P99 지연이 5분 동안 1초를 초과했습니다."
 
     # 3) 트래픽/에러율 이상 감지(베이스라인 대비 편차)
@@ -109,7 +109,7 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: "[🚨경고 - warning] 트래픽 이상 감지"
+            summary: "[경고] 트래픽 이상 감지"
             description: "팀={{ $labels.reciping_team }}, 서비스={{ $labels.reciping_service }}의 RPS가 최근 1시간 기준선 대비 3σ 이상 벗어났습니다(10분 지속)."
 
         - alert: ServiceErrorRateAnomaly
@@ -145,7 +145,7 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: "[🚨경고 - warning] 오류율 이상 감지"
+            summary: "[경고] 오류율 이상 감지"
             description: "팀={{ $labels.reciping_team }}, 서비스={{ $labels.reciping_service }}의 오류율이 최근 1시간 기준선 대비 3σ 이상 벗어났습니다(10분 지속)."
 
     # 4) JVM/리소스(애플리케이션 관점)
@@ -162,7 +162,7 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: "[🚨경고 - warning] JVM Heap 사용률 높음 (>90%)"
+            summary: "[경고] JVM Heap 사용률 높음 (>90%)"
             description: "팀={{ $labels.reciping_team }}, 서비스={{ $labels.reciping_service }}의 JVM Heap 사용률이 10분 동안 90%를 초과했습니다."
 
         - alert: ContainerRestarts
@@ -182,7 +182,7 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: "[🚨경고 - warning] 컨테이너 재시작 발생"
+            summary: "[경고] 컨테이너 재시작 발생"
             description: "namespace=reciping, pod={{ $labels.pod }}, team={{ $labels.reciping_team }}, service={{ $labels.reciping_service }} 재시작 감지"
 
         - alert: ContainerRestartsRaw
@@ -192,5 +192,5 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: "[🚨경고 - warning] 컨테이너 재시작 발생(원시)"
+            summary: "[경고] 컨테이너 재시작 발생"
             description: "namespace=reciping, pod={{ $labels.pod }}, container={{ $labels.container }} 재시작 감지"
