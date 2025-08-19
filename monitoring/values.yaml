@@ -46,6 +46,10 @@ prometheus:
       cluster: reciping-eks
       environment: prod
 
+kube-state-metrics:
+  metricLabelsAllowlist:
+    - pods=["reciping.io/team","app","app.kubernetes.io/name"]
+
 alertmanager:
   alertmanagerSpec:
     storage:
