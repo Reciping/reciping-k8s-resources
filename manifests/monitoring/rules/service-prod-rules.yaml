@@ -95,12 +95,12 @@ spec:
               -
               avg_over_time((
                 sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
-              )[1h:1m])
+              )[1h])
             )
             /
             clamp_min(stddev_over_time((
               sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
-            )[1h:1m]), 1e-6)
+            )[1h]), 1e-6)
             > 3
             and
             sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m])) > 0.1
@@ -126,7 +126,7 @@ spec:
                   /
                   sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
                 )
-              )[1h:1m])
+              )[1h])
             )
             /
             clamp_min(stddev_over_time((
@@ -135,7 +135,7 @@ spec:
                 /
                 sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
               )
-            )[1h:1m]), 1e-6)
+            )[1h]), 1e-6)
             > 3
             and
             sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m])) > 0.1
