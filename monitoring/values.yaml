@@ -71,7 +71,7 @@ alertmanager:
         # 임시: ContainerRestarts는 팀 라벨 유무와 관계없이 user 채널로 전송해 Slack 경로 검증
         - matchers: ['alertname="ContainerRestarts"']
           receiver: user-slack
-        - matchers: [ 'alertname="ContainerRestartsRaw"' ]
+        - matchers: ['alertname="ContainerRestartsRaw"']
           receiver: user-slack
         - matchers: ['reciping_team="ads"']
           receiver: ads-slack
@@ -83,9 +83,23 @@ alertmanager:
         slack_configs:
           - channel: '#ads-alerts'
             send_resolved: true
-            api_url: https://hooks.slack.com/services/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
+            api_url: https://hooks.slack.com/services/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
+            title: '{{ if eq .Status "firing" }}[알림] {{ .CommonLabels.alertname }} 발생{{ else }}[복구] {{ .CommonLabels.alertname }}{{ end }}'
+            text: |
+              팀={{ .CommonLabels.reciping_team }} 서비스={{ .CommonLabels.reciping_service }}
+              심각도={{ .CommonLabels.severity }} 상태={{ .Status }}
+              {{ range .Alerts }}- {{ .Annotations.summary }}
+                {{ .Annotations.description }}
+              {{ end }}
       - name: user-slack
         slack_configs:
           - channel: '#user-alerts'
             send_resolved: true
-            api_url: https://hooks.slack.com/services/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
+            api_url: https://hooks.slack.com/services/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
+            title: '{{ if eq .Status "firing" }}[알림] {{ .CommonLabels.alertname }} 발생{{ else }}[복구] {{ .CommonLabels.alertname }}{{ end }}'
+            text: |
+              팀={{ .CommonLabels.reciping_team }} 서비스={{ .CommonLabels.reciping_service }}
+              심각도={{ .CommonLabels.severity }} 상태={{ .Status }}
+              {{ range .Alerts }}- {{ .Annotations.summary }}
+                {{ .Annotations.description }}
+              {{ end }}
