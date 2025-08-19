@@ -184,3 +184,13 @@ spec:
           annotations:
             summary: "[🚨경고 - warning] 컨테이너 재시작 발생"
             description: "namespace=reciping, pod={{ $labels.pod }}, team={{ $labels.reciping_team }}, service={{ $labels.reciping_service }} 재시작 감지"
+
+        - alert: ContainerRestartsRaw
+          expr: |
+            increase(kube_pod_container_status_restarts_total{namespace="reciping"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "[🚨경고 - warning] 컨테이너 재시작 발생(원시)"
+            description: "namespace=reciping, pod={{ $labels.pod }}, container={{ $labels.container }} 재시작 감지"
