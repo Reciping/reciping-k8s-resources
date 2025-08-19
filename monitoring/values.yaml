@@ -27,6 +27,13 @@ prometheus:
     retention: 15d
     podMonitorNamespaceSelector: {}
     podMonitorSelector: {}
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelector: {}
+    ruleNamespaceSelector: {}
+    ruleSelectorNilUsesHelmValues: false
     storageSpec:
       volumeClaimTemplate:
         spec:
