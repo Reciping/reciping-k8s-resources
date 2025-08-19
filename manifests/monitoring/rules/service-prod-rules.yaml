@@ -90,14 +90,18 @@ spec:
       rules:
         - alert: ServiceTrafficAnomaly
           expr: |
-            # 최근 5분 RPS
+            # 최근 5분 RPS의 z-score (1시간 기준선, 1분 해상도)
             (
               sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
               -
-              avg_over_time(sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))[1h])
+              avg_over_time((
+                sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
+              )[1h:1m])
             )
             /
-            stddev_over_time(sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))[1h])
+            clamp_min(stddev_over_time((
+              sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
+            )[1h:1m]), 1e-6)
             > 3
             and
             sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m])) > 0.1
@@ -110,7 +114,7 @@ spec:
 
         - alert: ServiceErrorRateAnomaly
           expr: |
-            # 최근 5분 에러율 z-score
+            # 최근 5분 에러율의 z-score (1시간 기준선, 1분 해상도)
             (
               (
                 sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{status=~"5..",uri!~"/actuator/.*"}[5m]))
@@ -118,22 +122,23 @@ spec:
                 sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
               )
               -
-              avg_over_time(
+              avg_over_time((
                 (
                   sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{status=~"5..",uri!~"/actuator/.*"}[5m]))
                   /
                   sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
-                )[1h]
-              )
+                )
+              )[1h:1m])
             )
             /
-            stddev_over_time(
+            clamp_min(stddev_over_time((
               (
                 sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{status=~"5..",uri!~"/actuator/.*"}[5m]))
                 /
                 sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m]))
-              )[1h]
-            ) > 3
+              )
+            )[1h:1m]), 1e-6)
+            > 3
             and
             sum by (reciping_team,reciping_service) (rate(http_server_requests_seconds_count{uri!~"/actuator/.*"}[5m])) > 0.1
           for: 10m
