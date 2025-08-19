@@ -167,13 +167,25 @@ spec:
 
         - alert: ContainerRestarts
           expr: |
-            max by (namespace,pod,reciping_team,reciping_service) (
-              label_replace(
+            (
+              max by (namespace,pod,reciping_team,reciping_service) (
                 label_replace(
-                  kube_pod_labels{namespace="reciping",label_reciping_io_team!=""},
-                  "reciping_team","$1","label_reciping_io_team","(.*)"
-                ),
-                "reciping_service","$1","label_app|label_app_kubernetes_io_name","(.*)"
+                  label_replace(
+                    kube_pod_labels{namespace="reciping",label_reciping_io_team!=""},
+                    "reciping_team","$1","label_reciping_io_team","(.*)"
+                  ),
+                  "reciping_service","$1","label_app","(.*)"
+                )
+              )
+              or
+              max by (namespace,pod,reciping_team,reciping_service) (
+                label_replace(
+                  label_replace(
+                    kube_pod_labels{namespace="reciping",label_reciping_io_team!=""},
+                    "reciping_team","$1","label_reciping_io_team","(.*)"
+                  ),
+                  "reciping_service","$1","label_app_kubernetes_io_name","(.*)"
+                )
               )
             )
             and on(namespace,pod)
