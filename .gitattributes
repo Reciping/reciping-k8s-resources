@@ -1,0 +1,3 @@
+# Normalize line endings for dashboards so Grafana can parse JSON properly
+manifests/monitoring/dashboards/*.yaml text eol=lf
+*.json text eol=lf
