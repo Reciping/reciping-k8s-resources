@@ -22,6 +22,8 @@ grafana:
       label: grafana_dashboard
       searchNamespace: ALL
       folderAnnotation: grafana_folder
+      provider:
+        foldersFromFilesStructure: true
 
 prometheus:
   prometheusSpec:
