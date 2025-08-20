@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-user-service-advanced
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "Teams"
+data:
+  user-service-advanced.json: |
+    {"schemaVersion":39,"version":1,"title":"User Service Advanced","tags":["team:user"],"time":{"from":"now-6h","to":"now"},
+     "templating":{"list":[
+       {"name":"team","type":"constant","label":"team","query":"user","hide":2},
+       {"name":"service","type":"constant","label":"service","query":"reciping-user-service","hide":2},
+       {"name":"endpoint","type":"custom","label":"endpoint","query":"^/api/v1/users/signup$,^/api/v1/users/.*/created-at$,^/api/v1/users/me$,^/api/v1/mypage$,^/api/v1/mypage/bookmarks$,^/api/v1/auth/refresh$","includeAll":true,"multi":true,"current":{"text":"All","value":["$__all"]}}
+     ]},
+     "panels":[
+      {"type":"row","title":"Traffic & Errors","collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":0}},
+      {"type":"timeseries","title":"RPS (5m rate)","gridPos":{"h":7,"w":12,"x":0,"y":1},
+       "targets":[{"expr":"sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m]))","legendFormat":"{{uri}}"}]},
+      {"type":"timeseries","title":"오류율 (5m %)","gridPos":{"h":7,"w":12,"x":12,"y":1},
+       "targets":[{"expr":"100 * ( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",status=~\\\"5..\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m])) / sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m])) )","legendFormat":"{{uri}}"}]},
+
+      {"type":"row","title":"Latency","collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":8}},
+      {"type":"timeseries","title":"HTTP P95 (s)","gridPos":{"h":7,"w":12,"x":0,"y":9},
+       "targets":[{"expr":"histogram_quantile(0.95, sum by (uri,le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m]) ))","legendFormat":"{{uri}}"}]},
+      {"type":"timeseries","title":"HTTP P99 (s)","gridPos":{"h":7,"w":12,"x":12,"y":9},
+       "targets":[{"expr":"histogram_quantile(0.99, sum by (uri,le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m]) ))","legendFormat":"{{uri}}"}]},
+
+      {"type":"row","title":"Auth & Signup Funnel","collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":16}},
+      {"type":"timeseries","title":"Signup Attempts vs Success (5m)","gridPos":{"h":6,"w":12,"x":0,"y":17},
+       "targets":[
+        {"expr":"sum by (status) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri=\\\"/api/v1/users/signup\\\"}[5m]))","legendFormat":"signup {{status}}"},
+        {"expr":"sum by (status) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri=\\\"/api/v1/auth/refresh\\\"}[5m]))","legendFormat":"auth {{status}}"}
+       ]},
+      {"type":"timeseries","title":"Signup P95 (s)","gridPos":{"h":6,"w":12,"x":12,"y":17},
+       "targets":[{"expr":"histogram_quantile(0.95, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri=\\\"/api/v1/users/signup\\\"}[5m]) ))","legendFormat":"signup P95"}]},
+
+      {"type":"row","title":"My Page","collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":23}},
+      {"type":"timeseries","title":"MyPage P95 (s)","gridPos":{"h":6,"w":12,"x":0,"y":24},
+       "targets":[{"expr":"histogram_quantile(0.95, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri=\\\"/api/v1/mypage\\\"}[5m]) ))","legendFormat":"mypage P95"}]},
+      {"type":"timeseries","title":"Bookmarks RPS (5m)","gridPos":{"h":6,"w":12,"x":12,"y":24},
+       "targets":[{"expr":"sum(rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri=\\\"/api/v1/mypage/bookmarks\\\"}[5m]))","legendFormat":"bookmarks"}]},
+
+      {"type":"row","title":"Reliability","collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":30}},
+      {"type":"timeseries","title":"Instances Up","gridPos":{"h":6,"w":12,"x":0,"y":31},
+       "targets":[{"expr":"sum by (pod) (up{namespace=\\\"reciping\\\",reciping_service=\\\"$service\\\"})","legendFormat":"{{pod}}"}]},
+      {"type":"timeseries","title":"컨테이너 재시작 (5m)","gridPos":{"h":6,"w":12,"x":12,"y":31},
+       "targets":[{"expr":"sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\\\"reciping\\\"}[5m]))","legendFormat":"{{pod}}"}]}
+     ]}
+
