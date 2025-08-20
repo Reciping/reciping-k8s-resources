@@ -9,5 +9,95 @@ metadata:
     grafana_folder: "Teams"
 data:
   ads-service-overview.json: |
-    {"schemaVersion":39,"version":1,"title":"Ads Service Overview","tags":["team:ads"],"time":{"from":"now-6h","to":"now"},"templating":{"list":[{"name":"team","type":"constant","label":"team","query":"ads","hide":2}]},"panels":[]}
+    {
+      "schemaVersion": 39,
+      "version": 1,
+      "title": "Ads Service Overview",
+      "tags": ["team:ads"],
+      "time": {"from": "now-6h", "to": "now"},
+      "templating": {
+        "list": [
+          {"name": "team", "type": "constant", "label": "team", "query": "ads", "hide": 2},
+          {"name": "service", "type": "constant", "label": "service", "query": "reciping-ads-service", "hide": 2}
+        ]
+      },
+      "panels": [
+        {"type": "row", "title": "Traffic & Errors", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":0}},
+        {
+          "type": "timeseries",
+          "title": "RPS (5m rate)",
+          "gridPos": {"h":7, "w":12, "x":0, "y":1},
+          "targets": [
+            {"expr": "sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\"}[5m]))", "legendFormat": "{{reciping_service}}"}
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "오류율 (5m %)",
+          "gridPos": {"h":7, "w":12, "x":12, "y":1},
+          "targets": [
+            {"expr": "100 * ( sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",status=~\\\"5..\\\",uri!~\\\"/actuator/.*\\\"}[5m])) / sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\"}[5m])) )", "legendFormat": "{{reciping_service}}"}
+          ]
+        },
+        {"type": "row", "title": "Latency & JVM", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":8}},
+        {
+          "type": "timeseries",
+          "title": "HTTP P95 (s)",
+          "gridPos": {"h":7, "w":12, "x":0, "y":9},
+          "targets": [
+            {"expr": "histogram_quantile(0.95, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\"}[5m]) ))", "legendFormat": "P95"}
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "HTTP P99 (s)",
+          "gridPos": {"h":7, "w":12, "x":12, "y":9},
+          "targets": [
+            {"expr": "histogram_quantile(0.99, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\"}[5m]) ))", "legendFormat": "P99"}
+          ]
+        },
+        {"type": "row", "title": "Instances & Restarts", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":16}},
+        {
+          "type": "timeseries",
+          "title": "Instances Up",
+          "gridPos": {"h":6, "w":12, "x":0, "y":17},
+          "targets": [
+            {"expr": "sum by (pod) (up{namespace=\\\"reciping\\\",reciping_service=\\\"$service\\\"})", "legendFormat": "{{pod}}"}
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "컨테이너 재시작 (5m)",
+          "gridPos": {"h":6, "w":12, "x":12, "y":17},
+          "targets": [
+            {"expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\\\"reciping\\\"}[5m]))", "legendFormat": "{{pod}}"}
+          ]
+        },
+        {"type": "row", "title": "Endpoints (TopN)", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":23}},
+        {
+          "type": "timeseries",
+          "title": "Top RPS (uri)",
+          "gridPos": {"h":7, "w":8, "x":0, "y":24},
+          "targets": [
+            {"expr": "topk(10, sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\"}[5m])))", "legendFormat": "{{uri}}"}
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Top Error Rate (uri %)",
+          "gridPos": {"h":7, "w":8, "x":8, "y":24},
+          "targets": [
+            {"expr": "topk(10, 100 * ( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",status=~\\\"5..\\\",uri!~\\\"/actuator/.*\\\"}[5m])) / sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\"}[5m])) ))", "legendFormat": "{{uri}}"}
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Top P95 (uri s)",
+          "gridPos": {"h":7, "w":8, "x":16, "y":24},
+          "targets": [
+            {"expr": "topk(10, histogram_quantile(0.95, sum by (uri,le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\"}[5m]) )))", "legendFormat": "{{uri}}"}
+          ]
+        }
+      ]
+    }
 
