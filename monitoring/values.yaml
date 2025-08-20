@@ -21,6 +21,7 @@ grafana:
       enabled: true
       label: grafana_dashboard
       searchNamespace: ALL
+      folderAnnotation: grafana_folder
 
 prometheus:
   prometheusSpec:
@@ -68,11 +69,6 @@ alertmanager:
       repeat_interval: 4h
       receiver: default
       routes:
-        # 임시: ContainerRestarts는 팀 라벨 유무와 관계없이 user 채널로 전송해 Slack 경로 검증
-        - matchers: ['alertname="ContainerRestarts"']
-          receiver: user-slack
-        - matchers: ['alertname="ContainerRestartsRaw"']
-          receiver: user-slack
         - matchers: ['reciping_team="ads"']
           receiver: ads-slack
         - matchers: ['reciping_team="user"']
@@ -90,7 +86,7 @@ alertmanager:
               ☑️서비스={{ .CommonLabels.reciping_service }}
               ☑️심각도={{ .CommonLabels.severity }} 
               ☑️상태={{ .Status }}
-              
+
               {{ range .Alerts }}- {{ .Annotations.summary }}
                 {{ .Annotations.description }}
               {{ end }}
