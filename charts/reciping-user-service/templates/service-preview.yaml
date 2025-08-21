@@ -1,0 +1,17 @@
+{{- if eq .Values.strategy.type "blueGreen" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reciping-user-service.fullname" . }}-preview
+  labels:
+    app: {{ include "reciping-user-service.name" . }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ include "reciping-user-service.name" . }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.containerPort }}
+{{- end }}
+

@@ -23,6 +23,7 @@ spec:
         prometheus.io/port: {{ .Values.metrics.prometheus.port | quote }}
         {{- end }}
     spec:
+      terminationGracePeriodSeconds: {{ .Values.lifecycle.terminationGraceSeconds }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -33,6 +34,13 @@ spec:
           args:
             - "--spring.config.additional-location=file:/config/"
             - "--spring.profiles.active=prod"
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep {{ .Values.lifecycle.preStopSleepSeconds }}
           env:
             - name: JWT_SECRET_KEY
               valueFrom:
@@ -83,6 +91,7 @@ spec:
             name: {{ include "reciping-user-service.fullname" . }}-config
 
   strategy:
+    {{- if eq .Values.strategy.type "canary" }}
     canary:
       steps:
         - setWeight: 30
@@ -90,3 +99,16 @@ spec:
         - setWeight: 60
         - pause: { duration: 30s }
         - setWeight: 100
+    {{- else if eq .Values.strategy.type "blueGreen" }}
+    blueGreen:
+      activeService: {{ include "reciping-user-service.fullname" . }}
+      previewService: {{ include "reciping-user-service.fullname" . }}-preview
+      autoPromotionEnabled: {{ .Values.strategy.blueGreen.autoPromotionEnabled }}
+      autoPromotionSeconds: {{ .Values.strategy.blueGreen.autoPromotionSeconds }}
+      scaleDownDelaySeconds: {{ .Values.strategy.blueGreen.scaleDownDelaySeconds }}
+      previewReplicaCount: {{ .Values.strategy.blueGreen.previewReplicaCount }}
+    {{- else }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+    {{- end }}

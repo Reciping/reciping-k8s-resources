@@ -1,11 +1,11 @@
-replicaCount: 2
+replicaCount: 6
 
 # 팀 태그(모니터링/알람 라우팅에 사용)
 team: user
 
 image:
   repository: 892117097999.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-user-service
-  tag: v1.0.11
+  tag: v1.0.12
   pullPolicy: IfNotPresent
 imagePullSecrets:
   - name: reciping-ecr-secret
@@ -28,6 +28,18 @@ metrics:
     podMonitor:
       enabled: true
 
+# 배포 전략 실험 설정
+strategy:
+  # canary | blueGreen | rollingUpdate
+  type: blueGreen
+  blueGreen:
+    autoPromotionEnabled: true
+    autoPromotionSeconds: 0
+    scaleDownDelaySeconds: 30
+    previewReplicaCount: 2
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
 resources:
   limits:
     cpu: 500m
@@ -35,3 +47,8 @@ resources:
   requests:
     cpu: 250m
     memory: 256Mi
+
+# 배포 중 연결 드레인 및 종료 유예 시간 설정(실험용)
+lifecycle:
+  preStopSleepSeconds: 30
+  terminationGraceSeconds: 60
