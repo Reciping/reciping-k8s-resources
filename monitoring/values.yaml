@@ -53,6 +53,19 @@ kube-state-metrics:
   metricLabelsAllowlist:
     - pods=["reciping.io/team","app","app.kubernetes.io/name"]
 
+# Enable Pushgateway for mock metrics injection
+prometheus-pushgateway:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
 alertmanager:
   alertmanagerSpec:
     storage:

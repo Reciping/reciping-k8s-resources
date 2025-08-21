@@ -21,6 +21,9 @@ spec:
       path: manifests/monitoring
       directory:
         recurse: true
+    - repoURL: https://github.com/Reciping/reciping-k8s-resources
+      targetRevision: dev
+      path: manifests/monitoring/mock
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
