@@ -34,31 +34,30 @@ spec:
                 assign_c=$((assign_c+5)); assign_t=$((assign_t+5));
                 b05_c=$((b05_c+2)); b10_c=$((b10_c+3)); b25_c=$((b25_c+4)); bInf_c=$((bInf_c+5)); cnt_c=$((cnt_c+5)); sum_c=$((sum_c+1));
                 b05_t=$((b05_t+3)); b10_t=$((b10_t+4)); b25_t=$((b25_t+5)); bInf_t=$((bInf_t+6)); cnt_t=$((cnt_t+6)); sum_t=$((sum_t+1));
-                cat <<EOF >/tmp/metrics.prom
-                # TYPE ads_ab_event_total counter
-                ads_ab_event_total{reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="CONTROL",type="IMPRESSION"} ${imp_c}
-                ads_ab_event_total{reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="TREATMENT",type="IMPRESSION"} ${imp_t}
-                ads_ab_event_total{reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="CONTROL",type="CLICK"} ${clk_c}
-                ads_ab_event_total{reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="TREATMENT",type="CLICK"} ${clk_t}
-                # TYPE ads_ab_assignment_total counter
-                ads_ab_assignment_total{reciping_team="ads",reciping_service="reciping-ads-service",ab_group="CONTROL"} ${assign_c}
-                ads_ab_assignment_total{reciping_team="ads",reciping_service="reciping-ads-service",ab_group="TREATMENT"} ${assign_t}
-                # TYPE ads_recommendation_fallback_total counter
-                ads_recommendation_fallback_total{reciping_team="ads",reciping_service="reciping-ads-service"} ${fb}
-                # TYPE ads_serve_duration_seconds histogram
-                ads_serve_duration_seconds_bucket{le="0.05",reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="CONTROL"} ${b05_c}
-                ads_serve_duration_seconds_bucket{le="0.1",reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="CONTROL"} ${b10_c}
-                ads_serve_duration_seconds_bucket{le="0.25",reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="CONTROL"} ${b25_c}
-                ads_serve_duration_seconds_bucket{le="+Inf",reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="CONTROL"} ${bInf_c}
-                ads_serve_duration_seconds_count{reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="CONTROL"} ${cnt_c}
-                ads_serve_duration_seconds_sum{reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="CONTROL"} ${sum_c}
-                ads_serve_duration_seconds_bucket{le="0.05",reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="TREATMENT"} ${b05_t}
-                ads_serve_duration_seconds_bucket{le="0.1",reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="TREATMENT"} ${b10_t}
-                ads_serve_duration_seconds_bucket{le="0.25",reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="TREATMENT"} ${b25_t}
-                ads_serve_duration_seconds_bucket{le="+Inf",reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="TREATMENT"} ${bInf_t}
-                ads_serve_duration_seconds_count{reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="TREATMENT"} ${cnt_t}
-                ads_serve_duration_seconds_sum{reciping_team="ads",reciping_service="reciping-ads-service",scenario="home",ab_group="TREATMENT"} ${sum_t}
-                EOF
-                curl -sS --data-binary @/tmp/metrics.prom $PG/metrics/job/ads-ab-pusher/instance/pod-1 || true
+                {
+                  printf "# TYPE ads_ab_event_total counter\n"
+                  printf "ads_ab_event_total{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"CONTROL\",type=\"IMPRESSION\"} %s\n" "$imp_c"
+                  printf "ads_ab_event_total{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"TREATMENT\",type=\"IMPRESSION\"} %s\n" "$imp_t"
+                  printf "ads_ab_event_total{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"CONTROL\",type=\"CLICK\"} %s\n" "$clk_c"
+                  printf "ads_ab_event_total{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"TREATMENT\",type=\"CLICK\"} %s\n" "$clk_t"
+                  printf "# TYPE ads_ab_assignment_total counter\n"
+                  printf "ads_ab_assignment_total{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",ab_group=\"CONTROL\"} %s\n" "$assign_c"
+                  printf "ads_ab_assignment_total{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",ab_group=\"TREATMENT\"} %s\n" "$assign_t"
+                  printf "# TYPE ads_recommendation_fallback_total counter\n"
+                  printf "ads_recommendation_fallback_total{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\"} %s\n" "$fb"
+                  printf "# TYPE ads_serve_duration_seconds histogram\n"
+                  printf "ads_serve_duration_seconds_bucket{le=\"0.05\",reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"CONTROL\"} %s\n" "$b05_c"
+                  printf "ads_serve_duration_seconds_bucket{le=\"0.1\",reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"CONTROL\"} %s\n" "$b10_c"
+                  printf "ads_serve_duration_seconds_bucket{le=\"0.25\",reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"CONTROL\"} %s\n" "$b25_c"
+                  printf "ads_serve_duration_seconds_bucket{le=\"+Inf\",reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"CONTROL\"} %s\n" "$bInf_c"
+                  printf "ads_serve_duration_seconds_count{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"CONTROL\"} %s\n" "$cnt_c"
+                  printf "ads_serve_duration_seconds_sum{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"CONTROL\"} %s\n" "$sum_c"
+                  printf "ads_serve_duration_seconds_bucket{le=\"0.05\",reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"TREATMENT\"} %s\n" "$b05_t"
+                  printf "ads_serve_duration_seconds_bucket{le=\"0.1\",reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"TREATMENT\"} %s\n" "$b10_t"
+                  printf "ads_serve_duration_seconds_bucket{le=\"0.25\",reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"TREATMENT\"} %s\n" "$b25_t"
+                  printf "ads_serve_duration_seconds_bucket{le=\"+Inf\",reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"TREATMENT\"} %s\n" "$bInf_t"
+                  printf "ads_serve_duration_seconds_count{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"TREATMENT\"} %s\n" "$cnt_t"
+                  printf "ads_serve_duration_seconds_sum{reciping_team=\"ads\",reciping_service=\"reciping-ads-service\",scenario=\"home\",ab_group=\"TREATMENT\"} %s\n" "$sum_t"
+                } | curl -sS --data-binary @- "$PG/metrics/job/ads-ab-pusher/instance/pod-1" || true
                 sleep 10;
               done
