@@ -108,7 +108,7 @@ data:
           "title": "Group Distribution (assignments)",
           "gridPos": {"h":6, "w":8, "x":0, "y":32},
           "targets": [
-            {"expr": "sum by (ab_group) (rate(ads_ab_assignment_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\"}[5m]))", "legendFormat": "{{ab_group}}"}
+            {"expr": "sum by (ab_group) (rate(ads_ab_assignment_total{reciping_team=\"$team\",reciping_service=\"$service\"}[5m]))", "legendFormat": "{{ab_group}}"}
           ]
         },
         {
@@ -116,7 +116,7 @@ data:
           "title": "CTR by scenario & group (%)",
           "gridPos": {"h":6, "w":8, "x":8, "y":32},
           "targets": [
-            {"expr": "100 * ( ( sum by (scenario,ab_group) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\"}[15m])) or on (scenario,ab_group) (0 * sum by (scenario,ab_group) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])) ) ) / clamp_min( sum by (scenario,ab_group) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])), 1) )", "legendFormat": "{{scenario}}/{{ab_group}}"}
+            {"expr": "100 * ( ( sum by (scenario,ab_group) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\"}[15m])) or on (scenario,ab_group) (0 * sum by (scenario,ab_group) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])) ) ) / clamp_min( sum by (scenario,ab_group) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])), 1) )", "legendFormat": "{{scenario}}/{{ab_group}}"}
           ]
         },
         {
@@ -124,7 +124,7 @@ data:
           "title": "CTR Uplift vs Control (abs %)",
           "gridPos": {"h":6, "w":8, "x":16, "y":32},
           "targets": [
-            {"expr": "100 * ( ( ( sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\",ab_group=\"TREATMENT\"}[15m])) or on (scenario) (0 * sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"TREATMENT\"}[15m])) ) ) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"TREATMENT\"}[15m])), 1) ) - ( ( sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\",ab_group=\"CONTROL\"}[15m])) or on (scenario) (0 * sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"CONTROL\"}[15m])) ) ) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"CONTROL\"}[15m])), 1) ) )", "legendFormat": "{{scenario}}"}
+            {"expr": "100 * ( ( ( sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\",ab_group=\"TREATMENT\"}[15m])) or on (scenario) (0 * sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"TREATMENT\"}[15m])) ) ) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"TREATMENT\"}[15m])), 1) ) - ( ( sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\",ab_group=\"CONTROL\"}[15m])) or on (scenario) (0 * sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"CONTROL\"}[15m])) ) ) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"CONTROL\"}[15m])), 1) ) )", "legendFormat": "{{scenario}}"}
           ]
         },
         {
@@ -132,7 +132,7 @@ data:
           "title": "Fallback Rate (%)",
           "gridPos": {"h":6, "w":12, "x":0, "y":38},
           "targets": [
-            {"expr": "100 * ( ( sum(rate(ads_recommendation_fallback_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\"}[5m])) or (0 * sum(rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[5m])) ) ) / clamp_min( sum(rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[5m])), 0.0001) )", "legendFormat": "fallback%"}
+            {"expr": "100 * ( ( sum(rate(ads_recommendation_fallback_total{reciping_team=\"$team\",reciping_service=\"$service\"}[5m])) or (0 * sum(rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[5m])) ) ) / clamp_min( sum(rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[5m])), 0.0001) )", "legendFormat": "fallback%"}
           ]
         },
         {
@@ -140,7 +140,7 @@ data:
           "title": "Serve P95 by group/scenario (s)",
           "gridPos": {"h":6, "w":12, "x":12, "y":38},
           "targets": [
-            {"expr": "histogram_quantile(0.95, sum by (le,ab_group,scenario) ( rate(ads_serve_duration_seconds_bucket{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\"}[5m]) ))", "legendFormat": "{{scenario}}/{{ab_group}}"}
+            {"expr": "histogram_quantile(0.95, sum by (le,ab_group,scenario) ( rate(ads_serve_duration_seconds_bucket{reciping_team=\"$team\",reciping_service=\"$service\"}[5m]) ))", "legendFormat": "{{scenario}}/{{ab_group}}"}
           ]
         }
         ,
@@ -150,7 +150,7 @@ data:
           "title": "CTR by Position (15m %)",
           "gridPos": {"h":8, "w":24, "x":0, "y":45},
           "targets": [
-            {"expr": "100 * ( ( sum by (position) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\"}[15m])) or on (position) (0 * sum by (position) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])) ) ) / clamp_min( sum by (position) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])), 1) )", "legendFormat": "{{position}}"}
+            {"expr": "100 * ( ( sum by (position) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\"}[15m])) or on (position) (0 * sum by (position) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])) ) ) / clamp_min( sum by (position) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])), 1) )", "legendFormat": "{{position}}"}
           ],
           "options": {"legend": {"show": true}}
         }
