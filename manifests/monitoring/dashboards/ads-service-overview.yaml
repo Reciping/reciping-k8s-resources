@@ -31,7 +31,7 @@ data:
           "title": "RPS (5m rate)",
           "gridPos": {"h":7, "w":12, "x":0, "y":1},
           "targets": [
-            {"expr": "sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m]))", "legendFormat": "{{reciping_service}}"}
+            {"expr": "sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m]))", "legendFormat": "{{reciping_service}}"}
           ]
         },
         {
@@ -39,7 +39,7 @@ data:
           "title": "오류율 (5m %)",
           "gridPos": {"h":7, "w":12, "x":12, "y":1},
           "targets": [
-            {"expr": "100 * ( sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",status=~\\\"5..\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m])) / sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m])) )", "legendFormat": "{{reciping_service}}"}
+            {"expr": "100 * ( sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",status=~\"5..\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) / sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) )", "legendFormat": "{{reciping_service}}"}
           ]
         },
         {"type": "row", "title": "Latency & JVM", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":8}},
@@ -48,7 +48,7 @@ data:
           "title": "HTTP P95 (s)",
           "gridPos": {"h":7, "w":12, "x":0, "y":9},
           "targets": [
-            {"expr": "histogram_quantile(0.95, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m]) ))", "legendFormat": "P95"}
+            {"expr": "histogram_quantile(0.95, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m]) ))", "legendFormat": "P95"}
           ]
         },
         {
@@ -56,7 +56,7 @@ data:
           "title": "HTTP P99 (s)",
           "gridPos": {"h":7, "w":12, "x":12, "y":9},
           "targets": [
-            {"expr": "histogram_quantile(0.99, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m]) ))", "legendFormat": "P99"}
+            {"expr": "histogram_quantile(0.99, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m]) ))", "legendFormat": "P99"}
           ]
         },
         {"type": "row", "title": "Instances & Restarts", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":16}},
@@ -65,7 +65,7 @@ data:
           "title": "Instances Up",
           "gridPos": {"h":6, "w":12, "x":0, "y":17},
           "targets": [
-            {"expr": "sum by (pod) (up{namespace=\\\"reciping\\\",reciping_service=\\\"$service\\\"})", "legendFormat": "{{pod}}"}
+            {"expr": "sum by (pod) (up{namespace=\"reciping\",reciping_service=\"$service\"})", "legendFormat": "{{pod}}"}
           ]
         },
         {
@@ -73,7 +73,7 @@ data:
           "title": "컨테이너 재시작 (5m)",
           "gridPos": {"h":6, "w":12, "x":12, "y":17},
           "targets": [
-            {"expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\\\"reciping\\\"}[5m]))", "legendFormat": "{{pod}}"}
+            {"expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\"reciping\"}[5m]))", "legendFormat": "{{pod}}"}
           ]
         },
         {"type": "row", "title": "Endpoints (TopN)", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":23}},
@@ -82,7 +82,7 @@ data:
           "title": "Top RPS (uri)",
           "gridPos": {"h":7, "w":8, "x":0, "y":24},
           "targets": [
-            {"expr": "topk(10, sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m])))", "legendFormat": "{{uri}}"}
+            {"expr": "topk(10, sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])))", "legendFormat": "{{uri}}"}
           ]
         },
         {
@@ -90,7 +90,7 @@ data:
           "title": "Top Error Rate (uri %)",
           "gridPos": {"h":7, "w":8, "x":8, "y":24},
           "targets": [
-            {"expr": "topk(10, 100 * ( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",status=~\\\"5..\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m])) / sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m])) ))", "legendFormat": "{{uri}}"}
+            {"expr": "topk(10, 100 * ( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",status=~\"5..\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) / sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) ))", "legendFormat": "{{uri}}"}
           ]
         },
         {
@@ -98,7 +98,7 @@ data:
           "title": "Top P95 (uri s)",
           "gridPos": {"h":7, "w":8, "x":16, "y":24},
           "targets": [
-            {"expr": "topk(10, histogram_quantile(0.95, sum by (uri,le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m]) )))", "legendFormat": "{{uri}}"}
+            {"expr": "topk(10, histogram_quantile(0.95, sum by (uri,le) ( rate(http_server_requests_seconds_bucket{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m]) )))", "legendFormat": "{{uri}}"}
           ]
         }
         ,
@@ -108,7 +108,7 @@ data:
           "title": "Group Distribution (assignments)",
           "gridPos": {"h":6, "w":8, "x":0, "y":32},
           "targets": [
-            {"expr": "sum by (ab_group) (rate(ads_ab_assignment_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\"}[5m]))", "legendFormat": "{{ab_group}}"}
+            {"expr": "sum by (ab_group) (rate(ads_ab_assignment_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\"}[5m]))", "legendFormat": "{{ab_group}}"}
           ]
         },
         {
@@ -116,7 +116,7 @@ data:
           "title": "CTR by scenario & group (%)",
           "gridPos": {"h":6, "w":8, "x":8, "y":32},
           "targets": [
-            {"expr": "100 * ( sum by (scenario,ab_group) (rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"CLICK\\\"}[15m])) / clamp_min( sum by (scenario,ab_group) (rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"IMPRESSION\\\"}[15m])), 1) )", "legendFormat": "{{scenario}}/{{ab_group}}"}
+            {"expr": "100 * ( sum by (scenario,ab_group) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\"}[15m])) / clamp_min( sum by (scenario,ab_group) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])), 1) )", "legendFormat": "{{scenario}}/{{ab_group}}"}
           ]
         },
         {
@@ -124,7 +124,7 @@ data:
           "title": "CTR Uplift vs Control (abs %)",
           "gridPos": {"h":6, "w":8, "x":16, "y":32},
           "targets": [
-            {"expr": "100 * ( ( sum by (scenario) (rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"CLICK\\\",ab_group=\\\"TREATMENT\\\"}[15m])) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"IMPRESSION\\\",ab_group=\\\"TREATMENT\\\"}[15m])), 1) ) - ( sum by (scenario) (rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"CLICK\\\",ab_group=\\\"CONTROL\\\"}[15m])) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"IMPRESSION\\\",ab_group=\\\"CONTROL\\\"}[15m])), 1) ) )", "legendFormat": "{{scenario}}"}
+            {"expr": "100 * ( ( sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\",ab_group=\"TREATMENT\"}[15m])) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"TREATMENT\"}[15m])), 1) ) - ( sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\",ab_group=\"CONTROL\"}[15m])) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"CONTROL\"}[15m])), 1) ) )", "legendFormat": "{{scenario}}"}
           ]
         },
         {
@@ -132,7 +132,7 @@ data:
           "title": "Fallback Rate (%)",
           "gridPos": {"h":6, "w":12, "x":0, "y":38},
           "targets": [
-            {"expr": "100 * ( sum(rate(ads_recommendation_fallback_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\"}[5m])) / clamp_min( sum(rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"IMPRESSION\\\"}[5m])), 0.0001) )", "legendFormat": "fallback%"}
+            {"expr": "100 * ( sum(rate(ads_recommendation_fallback_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\"}[5m])) / clamp_min( sum(rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[5m])), 0.0001) )", "legendFormat": "fallback%"}
           ]
         },
         {
@@ -140,7 +140,7 @@ data:
           "title": "Serve P95 by group/scenario (s)",
           "gridPos": {"h":6, "w":12, "x":12, "y":38},
           "targets": [
-            {"expr": "histogram_quantile(0.95, sum by (le,ab_group,scenario) ( rate(ads_serve_duration_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\"}[5m]) ))", "legendFormat": "{{scenario}}/{{ab_group}}"}
+            {"expr": "histogram_quantile(0.95, sum by (le,ab_group,scenario) ( rate(ads_serve_duration_seconds_bucket{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\"}[5m]) ))", "legendFormat": "{{scenario}}/{{ab_group}}"}
           ]
         }
         ,
@@ -150,7 +150,7 @@ data:
           "title": "CTR by Position (15m %)",
           "gridPos": {"h":8, "w":24, "x":0, "y":45},
           "targets": [
-            {"expr": "100 * ( sum by (position) (rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"CLICK\\\"}[15m])) / clamp_min( sum by (position) (rate(ads_ab_event_total{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",type=\\\"IMPRESSION\\\"}[15m])), 1) )", "legendFormat": "{{position}}"}
+            {"expr": "100 * ( sum by (position) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\"}[15m])) / clamp_min( sum by (position) (rate(ads_ab_event_total{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])), 1) )", "legendFormat": "{{position}}"}
           ],
           "options": {"legend": {"show": true}}
         }
