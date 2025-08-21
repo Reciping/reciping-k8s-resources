@@ -39,7 +39,7 @@ data:
           "title": "오류율 (5m %)",
           "gridPos": {"h":7, "w":12, "x":12, "y":1},
           "targets": [
-            {"expr": "100 * ( sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",status=~\"5..\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) / sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) )", "legendFormat": "{{reciping_service}}"}
+            {"expr": "100 * ( ( sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",status=~\"5..\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) or on (reciping_service) (0 * sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) ) ) / clamp_min( sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])), 1) )", "legendFormat": "{{reciping_service}}"}
           ]
         },
         {"type": "row", "title": "Latency & JVM", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":8}},
@@ -90,7 +90,7 @@ data:
           "title": "Top Error Rate (uri %)",
           "gridPos": {"h":7, "w":8, "x":8, "y":24},
           "targets": [
-            {"expr": "topk(10, 100 * ( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",status=~\"5..\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) / sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) ))", "legendFormat": "{{uri}}"}
+            {"expr": "topk(10, 100 * ( ( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",status=~\"5..\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) or on (uri) (0 * sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) ) ) / clamp_min( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])), 1) ))", "legendFormat": "{{uri}}"}
           ]
         },
         {
