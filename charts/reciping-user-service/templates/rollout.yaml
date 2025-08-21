@@ -101,8 +101,8 @@ spec:
         - setWeight: 100
     {{- else if eq .Values.strategy.type "blueGreen" }}
     blueGreen:
-      activeService: {{ include "reciping-user-service.fullname" . }}
-      previewService: {{ include "reciping-user-service.fullname" . }}-preview
+      activeService: reciping-user-service
+      previewService: reciping-user-service-preview
       autoPromotionEnabled: {{ .Values.strategy.blueGreen.autoPromotionEnabled }}
       autoPromotionSeconds: {{ .Values.strategy.blueGreen.autoPromotionSeconds }}
       scaleDownDelaySeconds: {{ .Values.strategy.blueGreen.scaleDownDelaySeconds }}
