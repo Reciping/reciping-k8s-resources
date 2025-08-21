@@ -21,7 +21,7 @@ data:
           {"name": "service", "type": "constant", "label": "service", "query": "reciping-ads-service", "hide": 2},
           {"name": "endpoint", "type": "custom", "label": "endpoint",
            "query": "^/api/v1/ads/serve$,^/api/v1/ads/.*/click$,^/api/v1/ads/manage$,^/api/v1/ads/manage/.*/performance$",
-           "includeAll": true, "multi": true, "current": {"text": "All", "value": ["$__all"]}}
+           "includeAll": true, "allValue": ".*", "multi": true, "current": {"text": "All", "value": ["$__all"]}}
         ]
       },
       "panels": [
