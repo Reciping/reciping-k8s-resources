@@ -31,9 +31,9 @@ metrics:
 # 배포 전략 실험 설정
 strategy:
   # canary | blueGreen | rollingUpdate
-  type: blueGreen
+  type: canary
   blueGreen:
-    autoPromotionEnabled: true
+    autoPromotionEnabled: false
     autoPromotionSeconds: 0
     scaleDownDelaySeconds: 30
     previewReplicaCount: 2
