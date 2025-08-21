@@ -17,7 +17,7 @@ spec:
               image: curlimages/curl:8.5.0
               env:
                 - name: PG
-                  value: http://kube-prometheus-stack-prometheus-pushgateway.monitoring:9091
+                  value: http://mock-pushgateway.monitoring:9091
               command: ["sh","-c"]
               args:
                 - |
