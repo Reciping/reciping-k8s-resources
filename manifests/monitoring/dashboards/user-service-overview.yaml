@@ -27,7 +27,7 @@ data:
       "panels": [
         {"type": "row", "title": "Quick Filters", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":0}},
         {"type": "text", "title": "Endpoints", "gridPos": {"h":2, "w":24, "x":0, "y":1},
-         "options": {"mode": "markdown", "content": "[signup](/d/$__dashboard/__$__orgId__?var-team=user&var-service=reciping-user-service&var-endpoint=%5E/api/v1/users/signup$) | [mypage](/d/$__dashboard/__$__orgId__?var-team=user&var-service=reciping-user-service&var-endpoint=%5E/api/v1/mypage$) | [bookmarks](/d/$__dashboard/__$__orgId__?var-team=user&var-service=reciping-user-service&var-endpoint=%5E/api/v1/mypage/bookmarks$)"}},
+         "options": {"mode": "markdown", "content": "[signup](?var-team=user&var-service=reciping-user-service&var-endpoint=%5E/api/v1/users/signup$) | [mypage](?var-team=user&var-service=reciping-user-service&var-endpoint=%5E/api/v1/mypage$) | [bookmarks](?var-team=user&var-service=reciping-user-service&var-endpoint=%5E/api/v1/mypage/bookmarks$)"}},
         {"type": "row", "title": "Traffic & Errors", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":3}},
         {
           "type": "timeseries",

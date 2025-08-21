@@ -16,6 +16,15 @@ data:
        {"name":"endpoint","type":"custom","label":"endpoint","query":"^/api/v1/users/signup$,^/api/v1/users/.*/created-at$,^/api/v1/users/me$,^/api/v1/mypage$,^/api/v1/mypage/bookmarks$,^/api/v1/auth/refresh$","includeAll":true,"multi":true,"current":{"text":"All","value":["$__all"]}}
      ]},
      "panels":[
+      {"type":"row","title":"Badges","collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":0}},
+      {"type":"stat","title":"Active Alerts (User)","gridPos":{"h":3,"w":6,"x":0,"y":1},
+       "targets":[{"expr":"count(ALERTS{alertstate=\"firing\",reciping_team=\"user\"})"}]},
+      {"type":"stat","title":"5xx Error Rate (%)","gridPos":{"h":3,"w":6,"x":6,"y":1},
+       "targets":[{"expr":"100 * ( sum(rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"user\\\",reciping_service=\\\"reciping-user-service\\\",status=~\\\"5..\\\",uri!~\\\"/actuator/.*\\\"}[5m])) / sum(rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"user\\\",reciping_service=\\\"reciping-user-service\\\",uri!~\\\"/actuator/.*\\\"}[5m])) )"}]},
+      {"type":"stat","title":"P95 (s)","gridPos":{"h":3,"w":6,"x":12,"y":1},
+       "targets":[{"expr":"histogram_quantile(0.95, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\\\"reciping\\\",reciping_team=\\\"user\\\",reciping_service=\\\"reciping-user-service\\\",uri!~\\\"/actuator/.*\\\"}[5m]) ))"}]},
+      {"type":"stat","title":"RPS","gridPos":{"h":3,"w":6,"x":18,"y":1},
+       "targets":[{"expr":"sum(rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"user\\\",reciping_service=\\\"reciping-user-service\\\",uri!~\\\"/actuator/.*\\\"}[5m]))"}]},
       {"type":"row","title":"Traffic & Errors","collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":0}},
       {"type":"timeseries","title":"RPS (5m rate)","gridPos":{"h":7,"w":12,"x":0,"y":1},
        "targets":[{"expr":"sum by (uri) (rate(http_server_requests_seconds_count{namespace=\\\"reciping\\\",reciping_team=\\\"$team\\\",reciping_service=\\\"$service\\\",uri!~\\\"/actuator/.*\\\",uri=~\\\"$endpoint\\\"}[5m]))","legendFormat":"{{uri}}"}]},
