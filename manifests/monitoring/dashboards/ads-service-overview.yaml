@@ -19,16 +19,16 @@ data:
         "list": [
           {"name": "team", "type": "constant", "label": "team", "query": "ads", "hide": 2},
           {"name": "service", "type": "constant", "label": "service", "query": "reciping-ads-service", "hide": 2},
-          {"name": "endpoint", "type": "custom", "label": "endpoint",
+          {"name": "endpoint", "type": "custom", "label": "endpoint 선택하기",
            "query": "^/api/v1/ads/serve$,^/api/v1/ads/.*/click$,^/api/v1/ads/manage$,^/api/v1/ads/manage/.*/performance$",
            "includeAll": true, "allValue": ".*", "multi": true, "current": {"text": "All", "value": ["$__all"]}}
         ]
       },
       "panels": [
-        {"type": "row", "title": "Traffic & Errors", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":0}},
+        {"type": "row", "title": "1️⃣ 트래픽·오류 [Traffic & Errors]", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":0}},
         {
           "type": "timeseries",
-          "title": "RPS (5m rate)",
+          "title": "요청률 RPS (5m) (Requests/sec)",
           "gridPos": {"h":7, "w":12, "x":0, "y":1},
           "targets": [
             {"expr": "sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m]))", "legendFormat": "{{reciping_service}}"}
@@ -42,10 +42,10 @@ data:
             {"expr": "100 * ( ( sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",status=~\"5..\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) or on (reciping_service) (0 * sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) ) ) / clamp_min( sum by (reciping_service) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])), 1) )", "legendFormat": "{{reciping_service}}"}
           ]
         },
-        {"type": "row", "title": "Latency & JVM", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":8}},
+        {"type": "row", "title": "2️⃣ 지연·JVM (Latency & JVM)", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":8}},
         {
           "type": "timeseries",
-          "title": "HTTP P95 (s)",
+          "title": "HTTP 지연 P95 (초) (Latency P95)",
           "gridPos": {"h":7, "w":12, "x":0, "y":9},
           "targets": [
             {"expr": "histogram_quantile(0.95, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m]) ))", "legendFormat": "P95"}
@@ -53,16 +53,16 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "HTTP P99 (s)",
+          "title": "HTTP 지연 P99 (초) (Latency P99)",
           "gridPos": {"h":7, "w":12, "x":12, "y":9},
           "targets": [
             {"expr": "histogram_quantile(0.99, sum by (le) ( rate(http_server_requests_seconds_bucket{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m]) ))", "legendFormat": "P99"}
           ]
         },
-        {"type": "row", "title": "Instances & Restarts", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":16}},
+        {"type": "row", "title": "3️⃣ 인스턴스·재시작 [Instances & Restarts]", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":16}},
         {
           "type": "timeseries",
-          "title": "Instances Up",
+          "title": "실행 중 인스턴스 (Instances Up)",
           "gridPos": {"h":6, "w":12, "x":0, "y":17},
           "targets": [
             {"expr": "sum by (pod) (up{namespace=\"reciping\",reciping_service=\"$service\"})", "legendFormat": "{{pod}}"}
@@ -70,16 +70,16 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "컨테이너 재시작 (5m)",
+          "title": "컨테이너 재시작 (5m) (Container Restarts)",
           "gridPos": {"h":6, "w":12, "x":12, "y":17},
           "targets": [
             {"expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\"reciping\"}[5m]))", "legendFormat": "{{pod}}"}
           ]
         },
-        {"type": "row", "title": "Endpoints (TopN)", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":23}},
+        {"type": "row", "title": "엔드포인트 TopN (Endpoints)", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":23}},
         {
           "type": "timeseries",
-          "title": "Top RPS (uri)",
+          "title": "Top RPS (엔드포인트)",
           "gridPos": {"h":7, "w":8, "x":0, "y":24},
           "targets": [
             {"expr": "topk(10, sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])))", "legendFormat": "{{uri}}"}
@@ -87,7 +87,7 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Top Error Rate (uri %)",
+          "title": "Top 오류율 (엔드포인트, %)",
           "gridPos": {"h":7, "w":8, "x":8, "y":24},
           "targets": [
             {"expr": "topk(10, 100 * ( ( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",status=~\"5..\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) or on (uri) (0 * sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])) ) ) / clamp_min( sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m])), 1) ))", "legendFormat": "{{uri}}"}
@@ -95,17 +95,17 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Top P95 (uri s)",
+          "title": "Top P95 (엔드포인트, 초)",
           "gridPos": {"h":7, "w":8, "x":16, "y":24},
           "targets": [
             {"expr": "topk(10, histogram_quantile(0.95, sum by (uri,le) ( rate(http_server_requests_seconds_bucket{namespace=\"reciping\",reciping_team=\"$team\",reciping_service=\"$service\",uri!~\"/actuator/.*\",uri=~\"$endpoint\"}[5m]) )))", "legendFormat": "{{uri}}"}
           ]
         }
         ,
-        {"type": "row", "title": "A/B Testing", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":31}},
+        {"type": "row", "title": "4️⃣ 광고 노출 A/B 테스트 [A/B Testing]", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":31}},
         {
           "type": "timeseries",
-          "title": "Group Distribution (assignments)",
+          "title": "그룹 분포 (할당 수, assignments)",
           "gridPos": {"h":6, "w":8, "x":0, "y":32},
           "targets": [
             {"expr": "sum by (ab_group) (rate(ads_ab_assignment_total{reciping_team=\"$team\",reciping_service=\"$service\"}[5m]))", "legendFormat": "{{ab_group}}"}
@@ -113,7 +113,7 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "CTR by scenario & group (%)",
+          "title": "CTR (시나리오/그룹, %)",
           "gridPos": {"h":6, "w":8, "x":8, "y":32},
           "targets": [
             {"expr": "100 * ( ( sum by (scenario,ab_group) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\"}[15m])) or on (scenario,ab_group) (0 * sum by (scenario,ab_group) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])) ) ) / clamp_min( sum by (scenario,ab_group) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])), 1) )", "legendFormat": "{{scenario}}/{{ab_group}}"}
@@ -121,7 +121,7 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "CTR Uplift vs Control (abs %)",
+          "title": "CTR 상승폭 (대비 Control, 절대 %, Uplift)",
           "gridPos": {"h":6, "w":8, "x":16, "y":32},
           "targets": [
             {"expr": "100 * ( ( ( sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\",ab_group=\"TREATMENT\"}[15m])) or on (scenario) (0 * sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"TREATMENT\"}[15m])) ) ) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"TREATMENT\"}[15m])), 1) ) - ( ( sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\",ab_group=\"CONTROL\"}[15m])) or on (scenario) (0 * sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"CONTROL\"}[15m])) ) ) / clamp_min( sum by (scenario) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\",ab_group=\"CONTROL\"}[15m])), 1) ) )", "legendFormat": "{{scenario}}"}
@@ -129,7 +129,7 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Fallback Rate (%)",
+          "title": "Fallback 비율 (Fallback %)",
           "gridPos": {"h":6, "w":12, "x":0, "y":38},
           "targets": [
             {"expr": "100 * ( ( sum(rate(ads_recommendation_fallback_total{reciping_team=\"$team\",reciping_service=\"$service\"}[5m])) or (0 * sum(rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[5m])) ) ) / clamp_min( sum(rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[5m])), 0.0001) )", "legendFormat": "fallback%"}
@@ -137,17 +137,17 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Serve P95 by group/scenario (s)",
+          "title": "응답 P95 (그룹/시나리오, 초)",
           "gridPos": {"h":6, "w":12, "x":12, "y":38},
           "targets": [
             {"expr": "histogram_quantile(0.95, sum by (le,ab_group,scenario) ( rate(ads_serve_duration_seconds_bucket{reciping_team=\"$team\",reciping_service=\"$service\"}[5m]) ))", "legendFormat": "{{scenario}}/{{ab_group}}"}
           ]
         }
         ,
-        {"type": "row", "title": "Placement", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":44}},
+        {"type": "row", "title": "5️⃣ 배치 [Placement]", "collapsed": false, "gridPos": {"h":1, "w":24, "x":0, "y":44}},
         {
           "type": "heatmap",
-          "title": "CTR by Position (15m %)",
+          "title": "포지션별 CTR (15m, %)",
           "gridPos": {"h":8, "w":24, "x":0, "y":45},
           "targets": [
             {"expr": "100 * ( ( sum by (position) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"CLICK\"}[15m])) or on (position) (0 * sum by (position) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])) ) ) / clamp_min( sum by (position) (rate(ads_ab_event_total{reciping_team=\"$team\",reciping_service=\"$service\",type=\"IMPRESSION\"}[15m])), 1) )", "legendFormat": "{{position}}"}
