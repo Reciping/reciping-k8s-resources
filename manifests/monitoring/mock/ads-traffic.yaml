@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ads-traffic
+  namespace: reciping
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: curl
+            image: curlimages/curl:8.5.0
+            command: ["sh","-c"]
+            args:
+              - |
+                BASE="http://reciping-ads-service.reciping:8085"
+                urls="\
+                  $BASE/api/v1/ads/serve \
+                  $BASE/api/v1/ads/123/click \
+                  $BASE/api/v1/ads/manage \
+                  $BASE/api/v1/ads/manage/123/performance"
+                for u in $urls; do
+                  for i in $(seq 1 12); do
+                    curl -s -o /dev/null -w "%{http_code}\n" "$u" || true
+                    sleep 0.25
+                  done
+                done
