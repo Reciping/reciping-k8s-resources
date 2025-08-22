@@ -1,4 +1,4 @@
-replicaCount: 6
+replicaCount: 2
 
 # 팀 태그(모니터링/알람 라우팅에 사용)
 team: user
