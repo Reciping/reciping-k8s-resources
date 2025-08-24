@@ -5,7 +5,7 @@ team: user
 
 image:
   repository: 892117097999.dkr.ecr.ap-northeast-2.amazonaws.com/reciping-user-service
-  tag: v1.0.15
+  tag: v1.0.16
   pullPolicy: IfNotPresent
 imagePullSecrets:
   - name: reciping-ecr-secret
