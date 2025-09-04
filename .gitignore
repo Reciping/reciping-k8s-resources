@@ -1,3 +1,24 @@
-# Ignore local plain AWS secret manifest
+## Secrets (never commit plain or sealed secrets)
+# specific files
 charts/reciping-ads-service/plain-aws-secret.yaml
+manifests/ads/aws-sealedsecret.yaml
+
+# generic patterns
+**/plain-aws-secret.yaml
+**/*-plain-secret.yaml
+**/*-secret-plain.yaml
+
+## Local tools/binaries
+kubectl-argo-rollouts.exe
+
+## IDE/Project files
+.idea/
+*.iml
+
+## Rendered outputs / local artifacts
+rendered.yaml
+ingress-argocd-server.json
+
+## Truststore or certificate bundles (should create K8s Secret from local file)
+cacerts
 
